@@ -64,6 +64,8 @@ const organizationJsonLd = {
 };
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+const GOOGLE_SITE_VERIFICATION = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION;
+const isProduction = process.env.NODE_ENV === 'production';
 
 export default function RootLayout({
   children,
@@ -73,6 +75,9 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <head>
+        {GOOGLE_SITE_VERIFICATION && (
+          <meta name="google-site-verification" content={GOOGLE_SITE_VERIFICATION} />
+        )}
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
         <link
           rel="stylesheet"
@@ -88,7 +93,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased bg-gray-50 min-h-screen" style={{ fontFamily: 'Pretendard, sans-serif' }}>
-        {GA_ID && (
+        {isProduction && GA_ID && (
           <>
             <Script
               src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
