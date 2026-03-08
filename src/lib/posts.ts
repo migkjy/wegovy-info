@@ -1,0 +1,92 @@
+import fs from 'fs';
+import path from 'path';
+import matter from 'gray-matter';
+
+const postsDirectory = path.join(process.cwd(), 'content/posts');
+
+export interface PostFrontmatter {
+  title: string;
+  description: string;
+  date: string;
+  category: string;
+  tags: string[];
+  author: string;
+  image?: string;
+}
+
+export interface Post {
+  slug: string;
+  frontmatter: PostFrontmatter;
+  content: string;
+}
+
+export interface PostMeta {
+  slug: string;
+  frontmatter: PostFrontmatter;
+}
+
+function ensurePostsDirectory() {
+  if (!fs.existsSync(postsDirectory)) {
+    fs.mkdirSync(postsDirectory, { recursive: true });
+  }
+}
+
+export function getAllPosts(): PostMeta[] {
+  ensurePostsDirectory();
+
+  const fileNames = fs.readdirSync(postsDirectory).filter((f) => f.endsWith('.mdx') || f.endsWith('.md'));
+
+  const posts = fileNames.map((fileName) => {
+    const slug = fileName.replace(/\.(mdx|md)$/, '');
+    const fullPath = path.join(postsDirectory, fileName);
+    const fileContents = fs.readFileSync(fullPath, 'utf8');
+    const { data } = matter(fileContents);
+
+    return {
+      slug,
+      frontmatter: data as PostFrontmatter,
+    };
+  });
+
+  return posts.sort((a, b) =>
+    new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime()
+  );
+}
+
+export function getPostsByCategory(category: string): PostMeta[] {
+  return getAllPosts().filter((post) => post.frontmatter.category === category);
+}
+
+export function getPostBySlug(slug: string): Post | null {
+  ensurePostsDirectory();
+
+  const extensions = ['.mdx', '.md'];
+  let fullPath: string | null = null;
+
+  for (const ext of extensions) {
+    const candidate = path.join(postsDirectory, `${slug}${ext}`);
+    if (fs.existsSync(candidate)) {
+      fullPath = candidate;
+      break;
+    }
+  }
+
+  if (!fullPath) return null;
+
+  const fileContents = fs.readFileSync(fullPath, 'utf8');
+  const { data, content } = matter(fileContents);
+
+  return {
+    slug,
+    frontmatter: data as PostFrontmatter,
+    content,
+  };
+}
+
+export function getAllPostSlugs(): string[] {
+  ensurePostsDirectory();
+  return fs
+    .readdirSync(postsDirectory)
+    .filter((f) => f.endsWith('.mdx') || f.endsWith('.md'))
+    .map((f) => f.replace(/\.(mdx|md)$/, ''));
+}
