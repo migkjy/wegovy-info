@@ -41,8 +41,16 @@ export const clinics = sqliteTable('clinics', {
   updatedAt: text('updated_at').default(sql`(datetime('now'))`),
 });
 
+export const subscribers = sqliteTable('subscribers', {
+  id: text('id').primaryKey(),
+  email: text('email').notNull().unique(),
+  createdAt: text('created_at').default(sql`(datetime('now'))`),
+});
+
 export type Post = typeof posts.$inferSelect;
 export type NewPost = typeof posts.$inferInsert;
 export type PipelineItem = typeof pipelineQueue.$inferSelect;
 export type NewPipelineItem = typeof pipelineQueue.$inferInsert;
 export type Clinic = typeof clinics.$inferSelect;
+export type Subscriber = typeof subscribers.$inferSelect;
+export type NewSubscriber = typeof subscribers.$inferInsert;

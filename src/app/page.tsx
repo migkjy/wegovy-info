@@ -4,6 +4,7 @@ import PostCard from '@/components/PostCard';
 import FeaturedPost from '@/components/FeaturedPost';
 import CategoryNav from '@/components/CategoryNav';
 import Pagination from '@/components/Pagination';
+import NewsletterSignup from '@/components/NewsletterSignup';
 import Link from 'next/link';
 
 interface PageProps {
@@ -52,6 +53,9 @@ export default async function HomePage({ searchParams }: PageProps) {
           </div>
         </section>
       )}
+
+      {/* Newsletter Signup */}
+      {currentPage === 1 && <NewsletterSignup />}
 
       {/* Latest Posts */}
       <section>
