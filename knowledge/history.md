@@ -59,7 +59,20 @@
 - SNS Pipeline: scripts/sns-pipeline.mjs (Naver Blog RSS + Claude 요약)
 - Pipeline: JSON 파싱 버그 수정, 실제 뉴스 3개 자동 생성 성공
 
-## Current State
-- 103+ MDX 포스트 (파이프라인 자동 생성 중)
-- Clinic Directory, Newsletter, Insurance 페이지 완성
-- SNS 큐레이션 파이프라인 구축 (수동 승인 게이트)
+## 2026-04-02 — Phase 2 MVP 완성 (CCPM Sprint P2-1~P2-5)
+- P2-1: Clinic Directory (20개 병원, 8개 지역, MedicalClinic JSON-LD)
+- P2-2: Newsletter (Turso 저장, 이메일 구독 API)
+- P2-3: Insurance Comparison (/insurance, FAQ JSON-LD)
+- P2-4: SNS Curation Pipeline (scripts/sns-pipeline.mjs, 수동 승인 게이트)
+- P2-5: Community Board (/community, Turnstile, 키워드 필터)
+- Pipeline: JSON 파싱 버그 수정, 실제 뉴스 3개 자동 생성 성공 (커밋 651b6b0)
+- CI 수정: @libsql/client → Turso HTTP API, MDX < 이스케이프 버그
+
+## Current State (2026-04-02)
+- 103개+ MDX 포스트 (파이프라인 자동 생성 진행 중, 3개/일)
+- Phase 1+2 MVP 완성
+- 새 페이지: /clinics, /insurance, /community
+- API: /api/subscribe, /api/community
+- CI: 통과 (main 브랜치)
+- 도메인 미정, Vercel 설정 CEO 승인 대기
+- 다음 단계: Phase 2 KPI 달성 (50,000 UV), 실 클리닉 데이터 확보, 도메인 설정
