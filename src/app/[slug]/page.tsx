@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { getAllPosts, getAllPostSlugs, getPostBySlug, getReadingTime } from '@/lib/posts';
 import RelatedPosts from '@/components/RelatedPosts';
+import ShareButtons from '@/components/ShareButtons';
 import TableOfContents from '@/components/TableOfContents';
 import { CATEGORIES, DISCLAIMER, SITE_NAME, SITE_URL } from '@/lib/constants';
 import Link from 'next/link';
@@ -186,6 +187,13 @@ export default async function PostPage({ params }: PageProps) {
           {/* 데스크탑 TOC 사이드바 */}
           <TableOfContents />
         </div>
+
+        {/* 소셜 공유 */}
+        <ShareButtons
+          title={frontmatter.title}
+          description={frontmatter.description}
+          url={`${SITE_URL}/${slug}`}
+        />
 
         {/* 관련 글 */}
         <RelatedPosts
