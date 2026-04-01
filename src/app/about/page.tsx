@@ -14,7 +14,7 @@ const breadcrumbJsonLd = {
 
 export const metadata: Metadata = {
   title: '소개',
-  description: `${SITE_NAME}는 GLP-1 비만치료제(위고비, 삭센다, 마운자로)에 관한 객관적 정보를 제공하는 비영리 정보 사이트입니다.`,
+  description: '위고비, 삭센다, 마운자로 등 GLP-1 비만치료제 정보를 객관적으로 제공하는 다이어트약 정보 플랫폼입니다. 임상 데이터 기반 정보, 가격, 보험, 부작용 가이드를 제공합니다.',
   alternates: { canonical: `${SITE_URL}/about` },
   openGraph: {
     type: 'website',

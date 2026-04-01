@@ -5,13 +5,14 @@ import {
   realInsuranceItems,
   faqs,
 } from '@/data/insurance';
+import { SITE_URL } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'GLP-1 비만치료제 보험 적용 정보 | 위고비·삭센다·마운자로 건강보험·실손보험',
   description:
     '위고비, 삭센다, 마운자로의 건강보험 급여 현황, 본인부담률, 실손보험 적용 여부를 한눈에 비교하세요. 2026년 최신 보험 정보.',
   alternates: {
-    canonical: '/insurance',
+    canonical: `${SITE_URL}/insurance`,
   },
   openGraph: {
     title: 'GLP-1 비만치료제 보험 적용 정보',

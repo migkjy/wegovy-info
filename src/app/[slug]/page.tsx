@@ -80,6 +80,7 @@ export default async function PostPage({ params }: PageProps) {
     headline: frontmatter.title,
     description: frontmatter.description,
     datePublished: frontmatter.date,
+    dateModified: frontmatter.date,
     author: {
       '@type': 'Person',
       name: frontmatter.author,

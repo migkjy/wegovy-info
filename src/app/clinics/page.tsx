@@ -6,7 +6,7 @@ import { SITE_URL } from '@/lib/constants'
 export const metadata: Metadata = {
   title: '위고비 처방 병원 찾기 | GLP-1 비만치료제 처방 클리닉',
   description:
-    '위고비, 삭센다, 마운자로를 처방하는 병원을 지역별로 찾아보세요. 가격 정보와 특징을 비교할 수 있습니다.',
+    '서울, 부산, 대구, 인천 등 지역별 위고비·삭센다·마운자로 처방 병원 목록과 참고 가격 정보를 제공합니다.',
   alternates: { canonical: `${SITE_URL}/clinics` },
 }
 

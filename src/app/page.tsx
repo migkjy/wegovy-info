@@ -25,6 +25,8 @@ export default async function HomePage({ searchParams }: PageProps) {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
+      <h1 className="sr-only">GLP-1 비만치료제 정보 — 위고비, 삭센다, 마운자로 가이드</h1>
+
       {/* Featured Post Hero */}
       {currentPage === 1 && featuredPost && (
         <section className="mb-10">
