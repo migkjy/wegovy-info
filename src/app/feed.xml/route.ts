@@ -22,8 +22,8 @@ export function GET() {
       return `    <item>
       <title>${escapeXml(frontmatter.title)}</title>
       <description>${escapeXml(frontmatter.description)}</description>
-      <link>${link}</link>
-      <guid>${link}</guid>
+      <link>${escapeXml(link)}</link>
+      <guid isPermaLink="true">${escapeXml(link)}</guid>
       <pubDate>${pubDate}</pubDate>
       <category>${escapeXml(frontmatter.category)}</category>
     </item>`;
@@ -35,7 +35,7 @@ export function GET() {
   <channel>
     <title>${escapeXml(SITE_NAME)}</title>
     <description>${escapeXml(SITE_DESCRIPTION)}</description>
-    <link>${SITE_URL}</link>
+    <link>${escapeXml(SITE_URL)}</link>
     <atom:link href="${SITE_URL}/feed.xml" rel="self" type="application/rss+xml" />
     <language>ko</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
@@ -46,6 +46,7 @@ ${items}
   return new Response(rss, {
     headers: {
       'Content-Type': 'application/rss+xml; charset=utf-8',
+      'Cache-Control': 'max-age=3600',
     },
   });
 }

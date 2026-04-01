@@ -62,18 +62,11 @@ export default async function TagPage({ params }: PageProps) {
         </p>
       </header>
 
-      {posts.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">
-          <p className="text-lg mb-2">아직 등록된 글이 없습니다.</p>
-          <p className="text-sm">곧 유용한 정보가 업데이트됩니다.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {posts.map((post) => (
-            <PostCard key={post.slug} post={post} />
-          ))}
-        </div>
-      )}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {posts.map((post) => (
+          <PostCard key={post.slug} post={post} />
+        ))}
+      </div>
     </div>
   );
 }
