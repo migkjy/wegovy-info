@@ -14,7 +14,6 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.39.0",
     "@libsql/client": "^0.14.0",
     "@tailwindcss/typography": "^0.5.19",
     "drizzle-orm": "^0.41.0",

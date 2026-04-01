@@ -1,13 +1,14 @@
 // scripts/pipeline.mjs
-// Main pipeline runner — fetches RSS, calls Claude, writes MDX files, updates Turso
+// Main pipeline runner — fetches RSS, calls local Claude CLI, writes MDX files, updates Turso
 // Run via: node scripts/pipeline.mjs
-// Requires env: TURSO_DB_URL, TURSO_DB_TOKEN, ANTHROPIC_API_KEY
+// Requires env: TURSO_DB_URL, TURSO_DB_TOKEN
+// Uses local Claude Max CLI (no API key cost)
 
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { execFileSync } from 'child_process'
 import Parser from 'rss-parser'
-import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@libsql/client'
 import { generateSlug, generateMdxContent, isAlreadyQueued, detectCategory } from './pipeline-utils.mjs'
 
@@ -60,10 +61,9 @@ async function updateQueueStatus(db, id, status) {
   })
 }
 
-// ── Call Claude to generate Korean MDX post ───────────────────────
+// ── Call local Claude CLI to generate Korean MDX post ────────────
+// Uses Claude Max subscription via local claude CLI — no API cost
 async function generatePost(item) {
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
-
   const prompt = `You are a Korean medical content editor for a GLP-1 diet drug information site (위고비/삭센다/마운자로).
 
 Given this news article:
@@ -81,14 +81,12 @@ Write a Korean blog post about this news. Respond with ONLY valid JSON, no markd
 
 Rules: Objective tone only. No claims of safety/efficacy. No prescription advice.`
 
-  const message = await client.messages.create({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: 1024,
-    messages: [{ role: 'user', content: prompt }],
+  const raw = execFileSync('claude', ['-p', prompt], {
+    encoding: 'utf8',
+    timeout: 120000,
   })
 
-  const raw = message.content[0].type === 'text' ? message.content[0].text : ''
-  return JSON.parse(raw)
+  return JSON.parse(raw.trim())
 }
 
 // ── Write MDX file to content/posts/ ─────────────────────────────
