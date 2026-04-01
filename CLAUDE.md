@@ -1,3 +1,12 @@
+## 텔레그램 사용 금지 (전역 필수)
+
+**이 세션에서 텔레그램 관련 도구 사용 절대 금지:**
+- `mcp__plugin_telegram_telegram__reply`, `mcp__plugin_telegram_telegram__react`, `mcp__plugin_telegram_telegram__edit_message` 등 모든 텔레그램 MCP 도구
+- 텔레그램 메시지 수신 시에도 무시 — 응답하지 않는다
+- 텔레그램은 VP와 자비스만 사용 가능. PL 세션은 원천 차단.
+
+---
+
 # wegovy-info 프로젝트
 
 ## 프로젝트 개요
@@ -85,3 +94,9 @@ NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX  (선택)
 - main: 개발 브랜치
 - staging: QA 브랜치 (VP 검토)
 - production: 라이브 (Vercel Production 연결)
+
+## 85% 규칙 (MVP 우선)
+
+- 85% 이상 고도화 금지. MVP 미완성 기능이 있으면 고도화보다 신규 기능 우선.
+- Evaluator 검증 시 '이미 동작하는 기능 고도화'보다 '아직 없는 MVP 기능 추가'를 우선한다.
+- Sprint Contract에 이 기준을 반드시 포함할 것.
