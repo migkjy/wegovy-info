@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const url = `${SITE_URL}/category/${category}`;
 
   return {
-    title: `${cat.name} 정보`,
+    title: `${cat.name} - 비만치료제 정보 | ${SITE_NAME}`,
     description: cat.description,
     alternates: { canonical: url },
     openGraph: {
@@ -43,7 +43,21 @@ export default async function CategoryPage({ params }: PageProps) {
 
   const posts = getPostsByCategory(category);
 
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: '홈', item: SITE_URL },
+      { '@type': 'ListItem', position: 2, name: cat.name },
+    ],
+  };
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
     <div className="max-w-5xl mx-auto px-4 py-10">
       {/* 브레드크럼 */}
       <nav className="flex items-center gap-2 text-sm text-gray-400 mb-6">
@@ -72,5 +86,6 @@ export default async function CategoryPage({ params }: PageProps) {
         </div>
       )}
     </div>
+    </>
   );
 }

@@ -1,6 +1,15 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { DISCLAIMER, SITE_NAME, SITE_URL } from '@/lib/constants';
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: '홈', item: SITE_URL },
+    { '@type': 'ListItem', position: 2, name: '소개' },
+  ],
+};
 import FaqSchema from '@/components/FaqSchema';
 
 export const metadata: Metadata = {
@@ -48,6 +57,10 @@ const FAQ_ITEMS = [
 export default function AboutPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <FaqSchema faqs={FAQ_ITEMS} />
       <div className="max-w-3xl mx-auto px-4 py-10">
         {/* 브레드크럼 */}
