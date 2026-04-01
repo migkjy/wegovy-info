@@ -1,87 +1,82 @@
 import { getAllPosts } from '@/lib/posts';
 import { CATEGORIES, SITE_NAME, POSTS_PER_PAGE } from '@/lib/constants';
 import PostCard from '@/components/PostCard';
+import FeaturedPost from '@/components/FeaturedPost';
 import CategoryNav from '@/components/CategoryNav';
 import Pagination from '@/components/Pagination';
 import Link from 'next/link';
 
-interface HomePageProps {
+interface PageProps {
   searchParams: Promise<{ page?: string }>;
 }
 
-export default async function HomePage({ searchParams }: HomePageProps) {
+export default async function HomePage({ searchParams }: PageProps) {
   const { page: pageParam } = await searchParams;
   const currentPage = Math.max(1, parseInt(pageParam ?? '1', 10) || 1);
 
   const allPosts = getAllPosts();
-  const totalPages = Math.ceil(allPosts.length / POSTS_PER_PAGE);
-  const safePage = Math.min(currentPage, Math.max(1, totalPages));
-  const startIndex = (safePage - 1) * POSTS_PER_PAGE;
-  const posts = allPosts.slice(startIndex, startIndex + POSTS_PER_PAGE);
+  const featuredPost = allPosts[0];
+  const remainingPosts = allPosts.slice(1);
+
+  const totalPages = Math.ceil(remainingPosts.length / POSTS_PER_PAGE);
+  const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+  const pagePosts = remainingPosts.slice(startIndex, startIndex + POSTS_PER_PAGE);
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10">
-      {/* 히어로 섹션 */}
-      <section className="text-center py-12 mb-10">
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-          {SITE_NAME}
-        </h1>
-        <p className="text-lg text-gray-500 max-w-2xl mx-auto mb-6">
-          위고비, 삭센다, 마운자로 등 GLP-1 비만치료제 정보를 객관적으로 제공합니다.
-        </p>
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-700">
-          <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-          </svg>
-          이 사이트는 정보 제공 목적이며, 의학적 조언이 아닙니다. 반드시 전문의와 상담하세요.
-        </div>
-      </section>
+    <div className="max-w-5xl mx-auto px-4 py-8">
+      {/* Featured Post Hero */}
+      {currentPage === 1 && featuredPost && (
+        <section className="mb-10">
+          <FeaturedPost post={featuredPost} />
+        </section>
+      )}
 
-      {/* 카테고리 카드 */}
-      <section className="mb-12">
-        <h2 className="text-xl font-bold text-gray-900 mb-5">카테고리별 정보</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          {CATEGORIES.map((cat) => (
-            <Link
-              key={cat.slug}
-              href={`/category/${cat.slug}`}
-              className="group bg-white rounded-xl border border-gray-200 p-4 hover:border-teal-300 hover:shadow-md transition-all"
-            >
-              <h3 className="font-semibold text-gray-900 group-hover:text-teal-700 mb-1 transition-colors">
-                {cat.name}
-              </h3>
-              <p className="text-xs text-gray-400 line-clamp-2">{cat.description}</p>
-            </Link>
-          ))}
-        </div>
-      </section>
+      {/* Category Cards */}
+      {currentPage === 1 && (
+        <section className="mb-10">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-gray-900">카테고리</h2>
+          </div>
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+            {CATEGORIES.map((cat) => (
+              <Link
+                key={cat.slug}
+                href={`/category/${cat.slug}`}
+                className="group flex flex-col items-center gap-1 p-3 bg-white rounded-xl border border-gray-200 hover:border-teal-300 hover:shadow-sm transition-all text-center"
+              >
+                <span className="text-xs font-semibold text-gray-700 group-hover:text-teal-700 transition-colors">
+                  {cat.name}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
-      {/* 최신 글 */}
+      {/* Latest Posts */}
       <section>
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="text-xl font-bold text-gray-900">최신 글</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-bold text-gray-900">
+            {currentPage === 1 ? '최신 글' : `최신 글 — ${currentPage}페이지`}
+          </h2>
         </div>
         <CategoryNav />
-        {allPosts.length === 0 ? (
+
+        {pagePosts.length === 0 ? (
           <div className="text-center py-16 text-gray-400">
             <p className="text-lg mb-2">아직 등록된 글이 없습니다.</p>
             <p className="text-sm">곧 유용한 정보가 업데이트됩니다.</p>
           </div>
         ) : (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {posts.map((post) => (
-                <PostCard key={post.slug} post={post} />
-              ))}
-            </div>
-            {totalPages > 1 && (
-              <Pagination
-                currentPage={safePage}
-                totalPages={totalPages}
-                basePath="/"
-              />
-            )}
-          </>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {pagePosts.map((post) => (
+              <PostCard key={post.slug} post={post} />
+            ))}
+          </div>
+        )}
+
+        {totalPages > 1 && (
+          <Pagination currentPage={currentPage} totalPages={totalPages} basePath="/" />
         )}
       </section>
     </div>

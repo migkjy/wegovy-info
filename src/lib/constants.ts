@@ -34,6 +34,11 @@ export const CATEGORIES = [
     name: '가격정보',
     description: '비만치료제 가격 비교 및 보험 정보',
   },
+  {
+    slug: 'news',
+    name: '뉴스',
+    description: 'GLP-1 비만치료제 최신 뉴스 및 임상 소식',
+  },
 ];
 
 export const DISCLAIMER =

@@ -7,8 +7,8 @@ describe('constants', () => {
     expect(typeof SITE_NAME).toBe('string')
   })
 
-  it('exports 6 categories with required fields', () => {
-    expect(CATEGORIES).toHaveLength(6)
+  it('exports 7 categories with required fields', () => {
+    expect(CATEGORIES).toHaveLength(7)
     for (const cat of CATEGORIES) {
       expect(cat.slug).toBeTruthy()
       expect(cat.name).toBeTruthy()
