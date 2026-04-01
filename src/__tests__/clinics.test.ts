@@ -2,8 +2,8 @@ import { describe, it, expect } from 'vitest'
 import { clinics } from '../data/clinics'
 
 describe('clinics data', () => {
-  it('has at least 10 clinics', () => {
-    expect(clinics.length).toBeGreaterThanOrEqual(10)
+  it('has at least 50 clinics', () => {
+    expect(clinics.length).toBeGreaterThanOrEqual(50)
   })
 
   it('each clinic has required fields', () => {
