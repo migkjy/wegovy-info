@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import Footer from '@/components/Footer'
+import { CATEGORIES } from '@/lib/constants'
 
 vi.mock('next/link', () => ({
   default: ({ children, href, ...props }: { children: React.ReactNode; href: string; [key: string]: unknown }) => (
@@ -19,7 +20,7 @@ describe('Footer', () => {
     render(<Footer />)
     const links = screen.getAllByRole('link')
     const categoryLinks = links.filter(l => l.getAttribute('href')?.startsWith('/category/'))
-    expect(categoryLinks.length).toBe(7)
+    expect(categoryLinks.length).toBe(CATEGORIES.length)
   })
 
   it('renders legal notice section', () => {
