@@ -1,3 +1,8 @@
 {
-  "ignoreCommand": "[[ \"$VERCEL_GIT_COMMIT_REF\" != \"main\" && \"$VERCEL_GIT_COMMIT_REF\" != \"staging\" ]]"
+  "github": {
+    "enabled": true,
+    "autoJobCancelation": true,
+    "autoAlias": false
+  },
+  "ignoreCommand": "BRANCH=$VERCEL_GIT_COMMIT_REF; [[ \"$BRANCH\" != \"main\" && \"$BRANCH\" != \"staging\" ]]"
 }
