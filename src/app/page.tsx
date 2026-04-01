@@ -1,11 +1,23 @@
 import { getAllPosts } from '@/lib/posts';
-import { CATEGORIES, SITE_NAME } from '@/lib/constants';
+import { CATEGORIES, SITE_NAME, POSTS_PER_PAGE } from '@/lib/constants';
 import PostCard from '@/components/PostCard';
 import CategoryNav from '@/components/CategoryNav';
+import Pagination from '@/components/Pagination';
 import Link from 'next/link';
 
-export default function HomePage() {
-  const posts = getAllPosts();
+interface HomePageProps {
+  searchParams: Promise<{ page?: string }>;
+}
+
+export default async function HomePage({ searchParams }: HomePageProps) {
+  const { page: pageParam } = await searchParams;
+  const currentPage = Math.max(1, parseInt(pageParam ?? '1', 10) || 1);
+
+  const allPosts = getAllPosts();
+  const totalPages = Math.ceil(allPosts.length / POSTS_PER_PAGE);
+  const safePage = Math.min(currentPage, Math.max(1, totalPages));
+  const startIndex = (safePage - 1) * POSTS_PER_PAGE;
+  const posts = allPosts.slice(startIndex, startIndex + POSTS_PER_PAGE);
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">
@@ -50,17 +62,26 @@ export default function HomePage() {
           <h2 className="text-xl font-bold text-gray-900">최신 글</h2>
         </div>
         <CategoryNav />
-        {posts.length === 0 ? (
+        {allPosts.length === 0 ? (
           <div className="text-center py-16 text-gray-400">
             <p className="text-lg mb-2">아직 등록된 글이 없습니다.</p>
             <p className="text-sm">곧 유용한 정보가 업데이트됩니다.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {posts.map((post) => (
-              <PostCard key={post.slug} post={post} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {posts.map((post) => (
+                <PostCard key={post.slug} post={post} />
+              ))}
+            </div>
+            {totalPages > 1 && (
+              <Pagination
+                currentPage={safePage}
+                totalPages={totalPages}
+                basePath="/"
+              />
+            )}
+          </>
         )}
       </section>
     </div>

@@ -1,13 +1,15 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { getPostsByCategory } from '@/lib/posts';
-import { CATEGORIES, SITE_NAME, SITE_URL } from '@/lib/constants';
+import { CATEGORIES, SITE_NAME, SITE_URL, POSTS_PER_PAGE } from '@/lib/constants';
 import PostCard from '@/components/PostCard';
 import CategoryNav from '@/components/CategoryNav';
+import Pagination from '@/components/Pagination';
 import Link from 'next/link';
 
 interface PageProps {
   params: Promise<{ category: string }>;
+  searchParams: Promise<{ page?: string }>;
 }
 
 export async function generateStaticParams() {
@@ -36,12 +38,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function CategoryPage({ params }: PageProps) {
+export default async function CategoryPage({ params, searchParams }: PageProps) {
   const { category } = await params;
+  const { page: pageParam } = await searchParams;
+
   const cat = CATEGORIES.find((c) => c.slug === category);
   if (!cat) notFound();
 
-  const posts = getPostsByCategory(category);
+  const currentPage = Math.max(1, parseInt(pageParam ?? '1', 10) || 1);
+
+  const allPosts = getPostsByCategory(category);
+  const totalPages = Math.ceil(allPosts.length / POSTS_PER_PAGE);
+  const safePage = Math.min(currentPage, Math.max(1, totalPages));
+  const startIndex = (safePage - 1) * POSTS_PER_PAGE;
+  const posts = allPosts.slice(startIndex, startIndex + POSTS_PER_PAGE);
 
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
@@ -73,17 +83,26 @@ export default async function CategoryPage({ params }: PageProps) {
 
       <CategoryNav activeCategory={category} />
 
-      {posts.length === 0 ? (
+      {allPosts.length === 0 ? (
         <div className="text-center py-16 text-gray-400">
           <p className="text-lg mb-2">아직 등록된 글이 없습니다.</p>
           <p className="text-sm">곧 유용한 정보가 업데이트됩니다.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {posts.map((post) => (
-            <PostCard key={post.slug} post={post} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {posts.map((post) => (
+              <PostCard key={post.slug} post={post} />
+            ))}
+          </div>
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={safePage}
+              totalPages={totalPages}
+              basePath={`/category/${category}`}
+            />
+          )}
+        </>
       )}
     </div>
     </>

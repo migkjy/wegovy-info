@@ -38,3 +38,5 @@ export const CATEGORIES = [
 
 export const DISCLAIMER =
   '이 글은 정보 제공 목적이며, 의학적 조언이 아닙니다. 반드시 전문의와 상담하세요.';
+
+export const POSTS_PER_PAGE = 12;
