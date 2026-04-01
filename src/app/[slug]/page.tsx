@@ -1,7 +1,8 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
-import { getAllPostSlugs, getPostBySlug } from '@/lib/posts';
+import { getAllPostSlugs, getPostBySlug, getRelatedPosts } from '@/lib/posts';
+import PostCard from '@/components/PostCard';
 import { CATEGORIES, DISCLAIMER, SITE_NAME, SITE_URL } from '@/lib/constants';
 import Link from 'next/link';
 
@@ -50,6 +51,7 @@ export default async function PostPage({ params }: PageProps) {
   if (!post) notFound();
 
   const { frontmatter, content } = post;
+  const relatedPosts = getRelatedPosts(slug, frontmatter.category);
   const category = CATEGORIES.find((c) => c.slug === frontmatter.category);
   const formattedDate = new Date(frontmatter.date).toLocaleDateString('ko-KR', {
     year: 'numeric',
@@ -153,6 +155,18 @@ export default async function PostPage({ params }: PageProps) {
             <strong className="text-gray-700">면책조항:</strong> {DISCLAIMER} 이 글에 포함된 정보는 일반적인 교육 목적으로만 제공되며, 개인의 의료 상황에 따라 다를 수 있습니다.
           </p>
         </div>
+
+        {/* 관련 글 */}
+        {relatedPosts.length > 0 && (
+          <section className="mt-12">
+            <h2 className="text-xl font-bold text-gray-900 mb-5">관련 글</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {relatedPosts.map((relatedPost) => (
+                <PostCard key={relatedPost.slug} post={relatedPost} />
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </>
   );

@@ -83,6 +83,17 @@ export function getPostBySlug(slug: string): Post | null {
   };
 }
 
+export function getRelatedPosts(slug: string, category: string, limit = 3): PostMeta[] {
+  return getAllPosts()
+    .filter((post) => post.slug !== slug)
+    .sort((a, b) => {
+      const aMatch = a.frontmatter.category === category ? 1 : 0;
+      const bMatch = b.frontmatter.category === category ? 1 : 0;
+      return bMatch - aMatch;
+    })
+    .slice(0, limit);
+}
+
 export function getAllPostSlugs(): string[] {
   ensurePostsDirectory();
   return fs
