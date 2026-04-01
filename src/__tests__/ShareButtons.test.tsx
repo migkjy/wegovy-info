@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import ShareButtons from '@/components/ShareButtons'
 
 // Mock next/navigation (not needed but defensive)
@@ -45,17 +45,20 @@ describe('ShareButtons', () => {
     const copyButton = screen.getByRole('button', { name: /url 복사/i })
     expect(copyButton).toHaveTextContent('URL 복사')
 
-    fireEvent.click(copyButton)
-
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: /복사됨/i })).toHaveTextContent('복사됨!')
+    // Fire click and flush async clipboard promise with act
+    await act(async () => {
+      fireEvent.click(copyButton)
+      await Promise.resolve()
     })
 
-    vi.advanceTimersByTime(2000)
+    expect(screen.getByText('복사됨!')).toBeInTheDocument()
 
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: /url 복사/i })).toHaveTextContent('URL 복사')
+    // Advance fake time to trigger the 2s reset
+    act(() => {
+      vi.advanceTimersByTime(2000)
     })
+
+    expect(screen.getByRole('button', { name: /url 복사/i })).toHaveTextContent('URL 복사')
 
     vi.useRealTimers()
   })
@@ -104,10 +107,10 @@ describe('ShareButtons', () => {
       return originalGetElementById(id)
     })
 
-    render(<ShareButtons {...DEFAULT_PROPS} />)
-
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: /카카오톡/i })).toBeInTheDocument()
+    await act(async () => {
+      render(<ShareButtons {...DEFAULT_PROPS} />)
     })
+
+    expect(screen.getByRole('button', { name: /카카오톡/i })).toBeInTheDocument()
   })
 })
