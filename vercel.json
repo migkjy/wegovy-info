@@ -4,5 +4,5 @@
     "autoJobCancelation": true,
     "autoAlias": false
   },
-  "ignoreCommand": "BRANCH=$VERCEL_GIT_COMMIT_REF; [[ \"$BRANCH\" != \"main\" && \"$BRANCH\" != \"staging\" ]]"
+  "ignoreCommand": "if [ \"$VERCEL_GIT_COMMIT_REF\" = \"staging\" ] || [ \"$VERCEL_GIT_COMMIT_REF\" = \"production\" ]; then exit 1; else exit 0; fi"
 }
