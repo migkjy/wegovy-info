@@ -36,8 +36,18 @@
 - Pipeline 검증: 코드 정상, node_modules 설치 필요 (운영 블로커)
 - run-pipeline.sh PATH 수정 (Claude CLI 경로 명시)
 
-## Current State
-- 60개 MDX 포스트 (7개 카테고리: wegovy/saxenda/mounjaro/comparison/side-effects/price/news)
+## Current State (Sprint 8 이후)
+- 75개 MDX 포스트 (7개 카테고리: wegovy/saxenda/mounjaro/comparison/side-effects/price/news)
 - AI 파이프라인 코드 완성, Turso DB 연결됨, node_modules 설치 대기 중
 - CI 파이프라인 가동 (lint + test)
 - 도메인 미정, Vercel 프로젝트 설정 중
+
+## 2026-04-02 — Phase 1 완료: 100포스트 달성 (Sprint 9)
+- 25개 포스트 추가 (75→100)
+- Phase 1 KPI 달성: 100개 포스트
+- 카테고리별 추가: wegovy 4, saxenda 3, mounjaro 3, comparison 3, side-effects 4, price 3, news 5
+
+## Current State
+- 100개 MDX 포스트 (7개 카테고리)
+- AI 파이프라인 완성 (zero-dep, Turso HTTP API 기반)
+- Phase 1 완료 → Phase 2 준비 시작
