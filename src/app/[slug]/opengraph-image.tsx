@@ -15,6 +15,19 @@ export default async function OgImage({ params }: { params: Promise<{ slug: stri
   const { slug } = await params;
   const post = getPostBySlug(slug);
 
+  const fontData = await fetch(
+    'https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-kr@latest/korean-700-normal.woff'
+  ).then((res) => res.arrayBuffer());
+
+  const fontDataRegular = await fetch(
+    'https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-kr@latest/korean-400-normal.woff'
+  ).then((res) => res.arrayBuffer());
+
+  const fonts = [
+    { name: 'Noto Sans KR', data: fontData, style: 'normal' as const, weight: 700 as const },
+    { name: 'Noto Sans KR', data: fontDataRegular, style: 'normal' as const, weight: 400 as const },
+  ];
+
   if (!post) {
     return new ImageResponse(
       (
@@ -28,13 +41,14 @@ export default async function OgImage({ params }: { params: Promise<{ slug: stri
             backgroundColor: '#f0fdfa',
             color: '#0f766e',
             fontSize: 48,
+            fontFamily: 'Noto Sans KR',
             fontWeight: 700,
           }}
         >
           {SITE_NAME}
         </div>
       ),
-      { ...size }
+      { ...size, fonts }
     );
   }
 
@@ -149,6 +163,6 @@ export default async function OgImage({ params }: { params: Promise<{ slug: stri
         </div>
       </div>
     ),
-    { ...size }
+    { ...size, fonts }
   );
 }

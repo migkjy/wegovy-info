@@ -5,7 +5,20 @@ export const alt = '다이어트약 가이드 미리보기 이미지';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
-export default function OgImage() {
+export default async function OgImage() {
+  const fontData = await fetch(
+    'https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-kr@latest/korean-700-normal.woff'
+  ).then((res) => res.arrayBuffer());
+
+  const fontDataRegular = await fetch(
+    'https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-kr@latest/korean-400-normal.woff'
+  ).then((res) => res.arrayBuffer());
+
+  const fonts = [
+    { name: 'Noto Sans KR', data: fontData, style: 'normal' as const, weight: 700 as const },
+    { name: 'Noto Sans KR', data: fontDataRegular, style: 'normal' as const, weight: 400 as const },
+  ];
+
   return new ImageResponse(
     (
       <div
@@ -100,6 +113,6 @@ export default function OgImage() {
         </div>
       </div>
     ),
-    { ...size }
+    { ...size, fonts }
   );
 }

@@ -35,7 +35,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       publishedTime: frontmatter.date,
       locale: 'ko_KR',
       siteName: SITE_NAME,
-      ...(frontmatter.image ? { images: [{ url: frontmatter.image }] } : {}),
     },
     twitter: {
       card: 'summary_large_image',
