@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
+import remarkGfm from 'remark-gfm';
 import { getAllPosts, getAllPostSlugs, getPostBySlug, getReadingTime } from '@/lib/posts';
 import RelatedPosts from '@/components/RelatedPosts';
 import ShareButtons from '@/components/ShareButtons';
@@ -158,7 +159,7 @@ export default async function PostPage({ params }: PageProps) {
           <div>
             {/* 포스트 본문 */}
             <article className="prose prose-gray max-w-none prose-headings:font-bold prose-a:text-teal-600 prose-a:no-underline hover:prose-a:underline">
-              <MDXRemote source={content} />
+              <MDXRemote source={content} options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }} />
             </article>
 
             {/* 태그 */}
