@@ -19,7 +19,7 @@ describe('Footer', () => {
     render(<Footer />)
     const links = screen.getAllByRole('link')
     const categoryLinks = links.filter(l => l.getAttribute('href')?.startsWith('/category/'))
-    expect(categoryLinks.length).toBe(6)
+    expect(categoryLinks.length).toBe(7)
   })
 
   it('renders legal notice section', () => {
