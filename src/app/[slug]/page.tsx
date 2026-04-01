@@ -158,12 +158,13 @@ export default async function PostPage({ params }: PageProps) {
         {frontmatter.tags && frontmatter.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t border-gray-200">
             {frontmatter.tags.map((tag) => (
-              <span
+              <Link
                 key={tag}
-                className="px-3 py-1 text-xs text-gray-500 bg-gray-100 rounded-full"
+                href={`/tag/${encodeURIComponent(tag)}`}
+                className="px-3 py-1 text-xs text-gray-500 bg-gray-100 rounded-full hover:bg-teal-50 hover:text-teal-700 transition-colors"
               >
                 #{tag}
-              </span>
+              </Link>
             ))}
           </div>
         )}
