@@ -6,3 +6,10 @@ name: AI Content Pipeline
 
 on:
   workflow_dispatch:  # manual trigger only
+
+jobs:
+  info:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pipeline info
+        run: echo "AI pipeline runs locally on NUC via Windows Task Scheduler. See scripts/run-pipeline.sh"
