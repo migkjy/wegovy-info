@@ -49,6 +49,7 @@ function SearchContent() {
     async function fetchIndex() {
       try {
         const res = await fetch('/api/search');
+        if (!res.ok) throw new Error('Search index fetch failed');
         const data: SearchPost[] = await res.json();
         setPosts(data);
       } catch {
