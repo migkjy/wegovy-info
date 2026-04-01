@@ -60,6 +60,18 @@ export default async function PostPage({ params }: PageProps) {
     day: 'numeric',
   });
 
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: '홈', item: SITE_URL },
+      ...(category
+        ? [{ '@type': 'ListItem', position: 2, name: category.name, item: `${SITE_URL}/category/${category.slug}` }]
+        : []),
+      { '@type': 'ListItem', position: category ? 3 : 2, name: frontmatter.title },
+    ],
+  };
+
   const blogPostingJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -82,6 +94,10 @@ export default async function PostPage({ params }: PageProps) {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(blogPostingJsonLd) }}
