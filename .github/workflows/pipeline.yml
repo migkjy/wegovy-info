@@ -1,0 +1,44 @@
+name: AI Content Pipeline
+
+on:
+  schedule:
+    # 21:00 UTC = 06:00 KST daily
+    - cron: '0 21 * * *'
+  workflow_dispatch:  # allow manual trigger
+
+permissions:
+  contents: write  # needed for git push
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm install
+
+      - name: Run AI pipeline
+        env:
+          TURSO_DB_URL: ${{ secrets.TURSO_DB_URL }}
+          TURSO_DB_TOKEN: ${{ secrets.TURSO_DB_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node scripts/pipeline.mjs
+
+      - name: Commit and push new posts
+        run: |
+          git config user.name "wegovy-bot"
+          git config user.email "bot@wegovy-info.vercel.app"
+          git add content/posts/
+          if git diff --staged --quiet; then
+            echo "No new posts to commit"
+          else
+            git commit -m "feat(pipeline): auto-add GLP-1 news posts [skip ci]"
+            git push
+          fi
