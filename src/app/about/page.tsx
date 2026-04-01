@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { DISCLAIMER, SITE_NAME, SITE_URL } from '@/lib/constants';
+import FaqSchema from '@/components/FaqSchema';
 
 const breadcrumbJsonLd = {
   '@context': 'https://schema.org',
@@ -10,7 +11,6 @@ const breadcrumbJsonLd = {
     { '@type': 'ListItem', position: 2, name: '소개' },
   ],
 };
-import FaqSchema from '@/components/FaqSchema';
 
 export const metadata: Metadata = {
   title: '소개',
