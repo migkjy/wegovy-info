@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { createHash, randomUUID } from 'crypto'
 import { validatePost } from '@/lib/community-validation'
 
 const CREATE_TABLE_SQL = `CREATE TABLE IF NOT EXISTS community_posts (
@@ -9,6 +10,7 @@ const CREATE_TABLE_SQL = `CREATE TABLE IF NOT EXISTS community_posts (
   content TEXT NOT NULL,
   week INTEGER,
   weight_loss TEXT,
+  ip_hash TEXT,
   status TEXT DEFAULT 'visible',
   created_at TEXT DEFAULT (datetime('now'))
 )`
@@ -36,31 +38,49 @@ export async function POST(request: NextRequest) {
     const { nickname, drug, content, week, weightLoss, turnstileToken } = body
 
     // Validate Turnstile token
-    const turnstileSecret =
-      process.env.TURNSTILE_SECRET_KEY ?? '1x0000000000000000000000000000000AA'
-    const verifyRes = await fetch(
-      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          secret: turnstileSecret,
-          response: turnstileToken ?? '',
-        }),
+    const turnstileSecret = process.env.TURNSTILE_SECRET_KEY
+    if (!turnstileSecret) {
+      if (process.env.NODE_ENV === 'production') {
+        return NextResponse.json({ error: 'Turnstile not configured' }, { status: 500 })
       }
-    )
-    const verifyData = await verifyRes.json()
-    if (!verifyData.success) {
-      return NextResponse.json(
-        { error: '스팸 방지 검증에 실패했습니다. 다시 시도해주세요.' },
-        { status: 400 }
+      // Non-production: skip Turnstile verification
+    } else {
+      const verifyRes = await fetch(
+        'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            secret: turnstileSecret,
+            response: turnstileToken ?? '',
+          }),
+        }
       )
+      const verifyData = await verifyRes.json()
+      if (!verifyData.success) {
+        return NextResponse.json(
+          { error: '스팸 방지 검증에 실패했습니다. 다시 시도해주세요.' },
+          { status: 400 }
+        )
+      }
     }
 
     // Validate post content
-    const validationError = validatePost({ nickname, drug, content })
+    const validationError = validatePost({ nickname, drug, content, weightLoss })
     if (validationError) {
       return NextResponse.json({ error: validationError }, { status: 400 })
+    }
+
+    // Validate week
+    let weekInt: number | null = null
+    if (week != null && week !== '') {
+      weekInt = parseInt(String(week), 10)
+      if (isNaN(weekInt) || weekInt < 1 || weekInt > 200) {
+        return NextResponse.json(
+          { error: '복용 주차는 1~200 사이여야 합니다.' },
+          { status: 400 }
+        )
+      }
     }
 
     const { TURSO_URL, TURSO_TOKEN } = getTursoConfig()
@@ -68,15 +88,52 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'DB 설정 오류' }, { status: 500 })
     }
 
-    const id = Math.random().toString(36).slice(2, 14)
-    const weekValue = week != null && week !== '' ? { type: 'integer', value: String(parseInt(String(week), 10)) } : { type: 'null', value: null }
-    const weightLossValue = weightLoss ? { type: 'text', value: String(weightLoss) } : { type: 'null', value: null }
+    // IP rate limiting: max 5 posts per IP per hour
+    const rawIp =
+      request.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? '127.0.0.1'
+    const ipHash = createHash('sha256').update(rawIp).digest('hex').slice(0, 16)
+
+    const rateLimitRequests = [
+      {
+        type: 'execute',
+        stmt: {
+          sql: "SELECT COUNT(*) as cnt FROM community_posts WHERE ip_hash = ? AND created_at > datetime('now', '-1 hour')",
+          args: [{ type: 'text', value: ipHash }],
+        },
+      },
+      { type: 'close' },
+    ]
+
+    const rateLimitRes = await tursoRequest(TURSO_URL, TURSO_TOKEN, rateLimitRequests)
+    if (rateLimitRes.ok) {
+      const rateLimitData = await rateLimitRes.json()
+      const result = rateLimitData.results?.[0]
+      if (result && result.type !== 'error') {
+        const rows = result.response?.result?.rows ?? []
+        const count = Number(rows[0]?.[0]?.value ?? 0)
+        if (count >= 5) {
+          return NextResponse.json(
+            { error: '1시간에 최대 5개의 게시물만 등록할 수 있습니다.' },
+            { status: 429 }
+          )
+        }
+      }
+    }
+
+    const id = randomUUID()
+    const weekValue =
+      weekInt !== null
+        ? { type: 'integer', value: String(weekInt) }
+        : { type: 'null', value: null }
+    const weightLossValue = weightLoss
+      ? { type: 'text', value: String(weightLoss) }
+      : { type: 'null', value: null }
 
     const insertRequests = [
       {
         type: 'execute',
         stmt: {
-          sql: "INSERT INTO community_posts (id, nickname, drug, content, week, weight_loss, status, created_at) VALUES (?, ?, ?, ?, ?, ?, 'visible', datetime('now'))",
+          sql: "INSERT INTO community_posts (id, nickname, drug, content, week, weight_loss, ip_hash, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, 'visible', datetime('now'))",
           args: [
             { type: 'text', value: id },
             { type: 'text', value: nickname.trim() },
@@ -84,6 +141,7 @@ export async function POST(request: NextRequest) {
             { type: 'text', value: content.trim() },
             weekValue,
             weightLossValue,
+            { type: 'text', value: ipHash },
           ],
         },
       },
@@ -102,7 +160,7 @@ export async function POST(request: NextRequest) {
         {
           type: 'execute',
           stmt: {
-            sql: "INSERT INTO community_posts (id, nickname, drug, content, week, weight_loss, status, created_at) VALUES (?, ?, ?, ?, ?, ?, 'visible', datetime('now'))",
+            sql: "INSERT INTO community_posts (id, nickname, drug, content, week, weight_loss, ip_hash, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, 'visible', datetime('now'))",
             args: [
               { type: 'text', value: id },
               { type: 'text', value: nickname.trim() },
@@ -110,6 +168,7 @@ export async function POST(request: NextRequest) {
               { type: 'text', value: content.trim() },
               weekValue,
               weightLossValue,
+              { type: 'text', value: ipHash },
             ],
           },
         },
@@ -123,8 +182,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ success: true, message: '게시물이 등록되었습니다.' })
-  } catch (error) {
-    console.error('Community POST error:', error)
+  } catch {
     return NextResponse.json({ error: '게시물 등록 중 오류가 발생했습니다.' }, { status: 500 })
   }
 }
@@ -192,8 +250,7 @@ export async function GET() {
     }))
 
     return NextResponse.json({ posts })
-  } catch (error) {
-    console.error('Community GET error:', error)
+  } catch {
     return NextResponse.json({ error: '게시물 조회 중 오류가 발생했습니다.' }, { status: 500 })
   }
 }

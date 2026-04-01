@@ -74,6 +74,7 @@ export const communityPosts = sqliteTable('community_posts', {
   content: text('content').notNull(),
   week: integer('week'),
   weightLoss: text('weight_loss'),
+  ipHash: text('ip_hash'),
   status: text('status').default('visible'),
   createdAt: text('created_at').default(sql`(datetime('now'))`),
 })

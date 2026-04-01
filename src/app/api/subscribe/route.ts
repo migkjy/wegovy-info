@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { randomUUID } from 'crypto'
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,7 +19,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'DB 설정 오류' }, { status: 500 })
     }
 
-    const id = Math.random().toString(36).slice(2, 14)
+    const id = randomUUID()
     const body = JSON.stringify({
       requests: [
         {
@@ -91,8 +92,7 @@ export async function POST(request: NextRequest) {
     // if (process.env.RESEND_API_KEY) { ... }
 
     return NextResponse.json({ success: true, message: '뉴스레터 구독이 완료되었습니다!' })
-  } catch (error) {
-    console.error('Subscribe error:', error)
+  } catch {
     return NextResponse.json({ error: '구독 중 오류가 발생했습니다.' }, { status: 500 })
   }
 }

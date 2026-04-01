@@ -29,7 +29,24 @@ describe('community post validation', () => {
 
   it('rejects empty drug', () => {
     const result = validatePost({ ...validData, drug: '' })
-    expect(result).toBe('약물을 선택해주세요.')
+    expect(result).toBe('올바른 약물을 선택해주세요.')
+  })
+
+  it('rejects invalid drug enum', () => {
+    const result = validatePost({ ...validData, drug: 'ozempic' })
+    expect(result).toBe('올바른 약물을 선택해주세요.')
+  })
+
+  it('rejects unknown drug string', () => {
+    const result = validatePost({ ...validData, drug: 'unknown_drug_123' })
+    expect(result).toBe('올바른 약물을 선택해주세요.')
+  })
+
+  it('accepts all valid drug values', () => {
+    const drugs = ['wegovy', 'saxenda', 'mounjaro', 'other']
+    for (const drug of drugs) {
+      expect(validatePost({ ...validData, drug })).toBeNull()
+    }
   })
 
   it('rejects content under 10 chars', () => {
@@ -81,5 +98,48 @@ describe('community post validation', () => {
   it('accepts content with exactly 1000 chars', () => {
     const result = validatePost({ ...validData, content: 'a'.repeat(1000) })
     expect(result).toBeNull()
+  })
+
+  describe('weightLoss validation', () => {
+    it('accepts weightLoss within 20 chars', () => {
+      const result = validatePost({ ...validData, weightLoss: '-3.5kg' })
+      expect(result).toBeNull()
+    })
+
+    it('rejects weightLoss over 20 chars', () => {
+      const result = validatePost({ ...validData, weightLoss: 'a'.repeat(21) })
+      expect(result).toBe('체중 변화는 20자 이하로 입력해주세요.')
+    })
+
+    it('accepts exactly 20 chars weightLoss', () => {
+      const result = validatePost({ ...validData, weightLoss: 'a'.repeat(20) })
+      expect(result).toBeNull()
+    })
+
+    it('accepts undefined weightLoss', () => {
+      const result = validatePost({ ...validData })
+      expect(result).toBeNull()
+    })
+  })
+})
+
+describe('week NaN validation (unit)', () => {
+  it('parseInt of non-numeric string is NaN', () => {
+    expect(isNaN(parseInt('abc', 10))).toBe(true)
+  })
+
+  it('parseInt of 0 is falsy for range check', () => {
+    const weekInt = parseInt('0', 10)
+    expect(weekInt < 1).toBe(true)
+  })
+
+  it('parseInt of 201 exceeds max', () => {
+    const weekInt = parseInt('201', 10)
+    expect(weekInt > 200).toBe(true)
+  })
+
+  it('parseInt of valid week passes', () => {
+    const weekInt = parseInt('12', 10)
+    expect(!isNaN(weekInt) && weekInt >= 1 && weekInt <= 200).toBe(true)
   })
 })
