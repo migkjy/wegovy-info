@@ -51,3 +51,15 @@
 - 100개 MDX 포스트 (7개 카테고리)
 - AI 파이프라인 완성 (zero-dep, Turso HTTP API 기반)
 - Phase 1 완료 → Phase 2 준비 시작
+
+## 2026-04-02 — Phase 2 진행 (CCPM Sprint P2-1~P2-4)
+- Clinic Directory: 20개 병원, /clinics 목록/상세 페이지, MedicalClinic JSON-LD
+- Newsletter: /api/subscribe, NewsletterSignup 컴포넌트, Turso 저장
+- Insurance: /insurance 보험비교 페이지, FAQ JSON-LD
+- SNS Pipeline: scripts/sns-pipeline.mjs (Naver Blog RSS + Claude 요약)
+- Pipeline: JSON 파싱 버그 수정, 실제 뉴스 3개 자동 생성 성공
+
+## Current State
+- 103+ MDX 포스트 (파이프라인 자동 생성 중)
+- Clinic Directory, Newsletter, Insurance 페이지 완성
+- SNS 큐레이션 파이프라인 구축 (수동 승인 게이트)

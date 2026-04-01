@@ -47,6 +47,16 @@ export const subscribers = sqliteTable('subscribers', {
   createdAt: text('created_at').default(sql`(datetime('now'))`),
 });
 
+export const snsCuration = sqliteTable('sns_curation', {
+  id: text('id').primaryKey(),
+  sourceUrl: text('source_url').notNull().unique(),
+  sourcePlatform: text('source_platform').default('blog'), // blog | youtube | instagram
+  originalTitle: text('original_title'),
+  claudeSummary: text('claude_summary'), // Claude's brief summary (not full content)
+  status: text('status').default('pending'), // pending | approved | rejected
+  createdAt: text('created_at').default(sql`(datetime('now'))`),
+});
+
 export type Post = typeof posts.$inferSelect;
 export type NewPost = typeof posts.$inferInsert;
 export type PipelineItem = typeof pipelineQueue.$inferSelect;
@@ -54,3 +64,5 @@ export type NewPipelineItem = typeof pipelineQueue.$inferInsert;
 export type Clinic = typeof clinics.$inferSelect;
 export type Subscriber = typeof subscribers.$inferSelect;
 export type NewSubscriber = typeof subscribers.$inferInsert;
+export type SnsCuration = typeof snsCuration.$inferSelect;
+export type NewSnsCuration = typeof snsCuration.$inferInsert;

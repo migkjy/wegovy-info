@@ -29,6 +29,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
+  const staticPages: MetadataRoute.Sitemap = [
+    {
+      url: `${SITE_URL}/insurance`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+  ];
+
   const clinicDetailUrls: MetadataRoute.Sitemap = clinics.map((clinic) => ({
     url: `${SITE_URL}/clinics/${clinic.id}`,
     lastModified: new Date(),
@@ -44,6 +53,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     ...clinicListUrl,
+    ...staticPages,
     ...categoryUrls,
     ...clinicDetailUrls,
     ...postUrls,

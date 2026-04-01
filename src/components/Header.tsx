@@ -31,6 +31,12 @@ export default function Header() {
               병원 찾기
             </Link>
             <Link
+              href="/insurance"
+              className="px-3 py-1.5 text-sm text-gray-600 hover:text-teal-700 hover:bg-teal-50 rounded-md transition-colors"
+            >
+              보험정보
+            </Link>
+            <Link
               href="/about"
               className="px-3 py-1.5 text-sm text-gray-600 hover:text-teal-700 hover:bg-teal-50 rounded-md transition-colors"
             >
@@ -85,6 +91,15 @@ export default function Header() {
                   onClick={() => setMenuOpen(false)}
                 >
                   병원 찾기
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/insurance"
+                  className="block px-3 py-2 text-sm text-gray-600 hover:text-teal-700 hover:bg-teal-50 rounded-md transition-colors"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  보험정보
                 </Link>
               </li>
               <li>
