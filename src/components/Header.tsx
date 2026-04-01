@@ -25,6 +25,12 @@ export default function Header() {
               </Link>
             ))}
             <Link
+              href="/about"
+              className="px-3 py-1.5 text-sm text-gray-600 hover:text-teal-700 hover:bg-teal-50 rounded-md transition-colors"
+            >
+              소개
+            </Link>
+            <Link
               href="/search"
               className="ml-1 p-1.5 text-gray-500 hover:text-teal-700 hover:bg-teal-50 rounded-md transition-colors"
               aria-label="검색"
@@ -66,6 +72,15 @@ export default function Header() {
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link
+                  href="/about"
+                  className="block px-3 py-2 text-sm text-gray-600 hover:text-teal-700 hover:bg-teal-50 rounded-md transition-colors"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  소개
+                </Link>
+              </li>
               <li>
                 <Link
                   href="/search"

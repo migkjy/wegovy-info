@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { getAllPostSlugs, getPostBySlug, getRelatedPosts, getReadingTime } from '@/lib/posts';
 import PostCard from '@/components/PostCard';
+import TableOfContents from '@/components/TableOfContents';
 import { CATEGORIES, DISCLAIMER, SITE_NAME, SITE_URL } from '@/lib/constants';
 import Link from 'next/link';
 
@@ -101,7 +102,7 @@ export default async function PostPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(blogPostingJsonLd) }}
       />
-      <div className="max-w-3xl mx-auto px-4 py-10">
+      <div className="max-w-5xl mx-auto px-4 py-10">
         {/* 브레드크럼 */}
         <nav className="flex items-center gap-2 text-sm text-gray-400 mb-6">
           <Link href="/" className="hover:text-teal-600 transition-colors">홈</Link>
@@ -148,31 +149,42 @@ export default async function PostPage({ params }: PageProps) {
           </div>
         </header>
 
-        {/* 포스트 본문 */}
-        <article className="prose prose-gray max-w-none prose-headings:font-bold prose-a:text-teal-600 prose-a:no-underline hover:prose-a:underline">
-          <MDXRemote source={content} />
-        </article>
+        {/* 모바일 TOC */}
+        <TableOfContents />
 
-        {/* 태그 */}
-        {frontmatter.tags && frontmatter.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t border-gray-200">
-            {frontmatter.tags.map((tag) => (
-              <Link
-                key={tag}
-                href={`/tag/${encodeURIComponent(tag)}`}
-                className="px-3 py-1 text-xs text-gray-500 bg-gray-100 rounded-full hover:bg-teal-50 hover:text-teal-700 transition-colors"
-              >
-                #{tag}
-              </Link>
-            ))}
+        {/* 본문 + 데스크탑 TOC 사이드바 */}
+        <div className="lg:grid lg:grid-cols-[1fr_200px] lg:gap-8">
+          <div>
+            {/* 포스트 본문 */}
+            <article className="prose prose-gray max-w-none prose-headings:font-bold prose-a:text-teal-600 prose-a:no-underline hover:prose-a:underline">
+              <MDXRemote source={content} />
+            </article>
+
+            {/* 태그 */}
+            {frontmatter.tags && frontmatter.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t border-gray-200">
+                {frontmatter.tags.map((tag) => (
+                  <Link
+                    key={tag}
+                    href={`/tag/${encodeURIComponent(tag)}`}
+                    className="px-3 py-1 text-xs text-gray-500 bg-gray-100 rounded-full hover:bg-teal-50 hover:text-teal-700 transition-colors"
+                  >
+                    #{tag}
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            {/* 하단 면책조항 */}
+            <div className="mt-10 p-5 bg-gray-50 border border-gray-200 rounded-xl">
+              <p className="text-xs text-gray-500 leading-relaxed">
+                <strong className="text-gray-700">면책조항:</strong> {DISCLAIMER} 이 글에 포함된 정보는 일반적인 교육 목적으로만 제공되며, 개인의 의료 상황에 따라 다를 수 있습니다.
+              </p>
+            </div>
           </div>
-        )}
 
-        {/* 하단 면책조항 */}
-        <div className="mt-10 p-5 bg-gray-50 border border-gray-200 rounded-xl">
-          <p className="text-xs text-gray-500 leading-relaxed">
-            <strong className="text-gray-700">면책조항:</strong> {DISCLAIMER} 이 글에 포함된 정보는 일반적인 교육 목적으로만 제공되며, 개인의 의료 상황에 따라 다를 수 있습니다.
-          </p>
+          {/* 데스크탑 TOC 사이드바 */}
+          <TableOfContents />
         </div>
 
         {/* 관련 글 */}
