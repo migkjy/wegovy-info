@@ -27,6 +27,20 @@ export default function PostCard({ post }: PostCardProps) {
           {frontmatter.title}
         </h2>
         <p className="text-sm text-gray-500 line-clamp-2 mb-4">{frontmatter.description}</p>
+        {frontmatter.tags && frontmatter.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            {frontmatter.tags.map((tag) => (
+              <Link
+                key={tag}
+                href={`/tag/${encodeURIComponent(tag)}`}
+                onClick={(e) => e.stopPropagation()}
+                className="px-2 py-0.5 text-xs text-gray-500 bg-gray-100 rounded-full hover:bg-teal-50 hover:text-teal-700 transition-colors"
+              >
+                #{tag}
+              </Link>
+            ))}
+          </div>
+        )}
         <div className="flex items-center justify-between text-xs text-gray-400">
           <span>{frontmatter.author}</span>
           <time dateTime={frontmatter.date}>{formattedDate}</time>

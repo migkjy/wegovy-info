@@ -100,6 +100,23 @@ export function getRelatedPosts(slug: string, category: string, limit = 3): Post
     .slice(0, limit);
 }
 
+export function getAllTags(): string[] {
+  const posts = getAllPosts();
+  const tagSet = new Set<string>();
+  posts.forEach((post) => {
+    if (post.frontmatter.tags) {
+      post.frontmatter.tags.forEach((tag) => tagSet.add(tag));
+    }
+  });
+  return Array.from(tagSet).sort();
+}
+
+export function getPostsByTag(tag: string): PostMeta[] {
+  return getAllPosts().filter((post) =>
+    post.frontmatter.tags?.includes(tag)
+  );
+}
+
 export function getAllPostSlugs(): string[] {
   ensurePostsDirectory();
   return fs

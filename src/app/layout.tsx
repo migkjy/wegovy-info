@@ -78,6 +78,7 @@ export default function RootLayout({
         {GOOGLE_SITE_VERIFICATION && (
           <meta name="google-site-verification" content={GOOGLE_SITE_VERIFICATION} />
         )}
+        <link rel="alternate" type="application/rss+xml" title={SITE_NAME} href={`${SITE_URL}/feed.xml`} />
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
         <link
           rel="stylesheet"
