@@ -76,11 +76,16 @@ export default function ShareButtons({ title, description, url }: ShareButtonsPr
     });
   };
 
+  useEffect(() => {
+    if (!copied) return;
+    const timer = setTimeout(() => setCopied(false), 2000);
+    return () => clearTimeout(timer);
+  }, [copied]);
+
   const handleCopyUrl = async () => {
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
     } catch {
       window.prompt('아래 URL을 복사하세요:', url);
     }
