@@ -20,6 +20,7 @@ set -a && source "$REPO_DIR/.env" && set +a
 git -C "$REPO_DIR" pull origin main 2>&1 | tee -a "$LOG_FILE"
 
 # Run pipeline
+export PATH="$PATH:/c/Users/migkj/.local/bin"
 node "$REPO_DIR/scripts/pipeline.mjs" 2>&1 | tee -a "$LOG_FILE"
 
 # Commit and push new posts
