@@ -25,6 +25,12 @@ export interface PostMeta {
   frontmatter: PostFrontmatter;
 }
 
+export function getReadingTime(content: string): number {
+  const wordsPerMinute = 500; // Korean text reads ~500 characters per minute
+  const charCount = content.replace(/\s/g, '').length;
+  return Math.max(1, Math.ceil(charCount / wordsPerMinute));
+}
+
 function ensurePostsDirectory() {
   if (!fs.existsSync(postsDirectory)) {
     fs.mkdirSync(postsDirectory, { recursive: true });

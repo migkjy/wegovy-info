@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
-import { getAllPostSlugs, getPostBySlug, getRelatedPosts } from '@/lib/posts';
+import { getAllPostSlugs, getPostBySlug, getRelatedPosts, getReadingTime } from '@/lib/posts';
 import PostCard from '@/components/PostCard';
 import { CATEGORIES, DISCLAIMER, SITE_NAME, SITE_URL } from '@/lib/constants';
 import Link from 'next/link';
@@ -52,6 +52,7 @@ export default async function PostPage({ params }: PageProps) {
 
   const { frontmatter, content } = post;
   const relatedPosts = getRelatedPosts(slug, frontmatter.category);
+  const readingTime = getReadingTime(content);
   const category = CATEGORIES.find((c) => c.slug === frontmatter.category);
   const formattedDate = new Date(frontmatter.date).toLocaleDateString('ko-KR', {
     year: 'numeric',
@@ -127,6 +128,8 @@ export default async function PostPage({ params }: PageProps) {
             <span>{frontmatter.author}</span>
             <span>·</span>
             <time dateTime={frontmatter.date}>{formattedDate}</time>
+            <span>·</span>
+            <span>{readingTime}분 읽기</span>
           </div>
         </header>
 
