@@ -52,4 +52,4 @@ export async function tursoExecute(sql: string, args: (string | number | null)[]
   await tursoQuery(sql, args)
 }
 
-export { schema } from './schema'
+export * from './schema'
