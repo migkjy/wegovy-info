@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
-import { getAllPostSlugs, getPostBySlug, getRelatedPosts, getReadingTime } from '@/lib/posts';
-import PostCard from '@/components/PostCard';
+import { getAllPosts, getAllPostSlugs, getPostBySlug, getReadingTime } from '@/lib/posts';
+import RelatedPosts from '@/components/RelatedPosts';
 import TableOfContents from '@/components/TableOfContents';
 import { CATEGORIES, DISCLAIMER, SITE_NAME, SITE_URL } from '@/lib/constants';
 import Link from 'next/link';
@@ -51,7 +51,7 @@ export default async function PostPage({ params }: PageProps) {
   if (!post) notFound();
 
   const { frontmatter, content } = post;
-  const relatedPosts = getRelatedPosts(slug, frontmatter.category);
+  const allPosts = getAllPosts();
   const readingTime = getReadingTime(content);
   const category = CATEGORIES.find((c) => c.slug === frontmatter.category);
   const formattedDate = new Date(frontmatter.date).toLocaleDateString('ko-KR', {
@@ -188,16 +188,12 @@ export default async function PostPage({ params }: PageProps) {
         </div>
 
         {/* 관련 글 */}
-        {relatedPosts.length > 0 && (
-          <section className="mt-12">
-            <h2 className="text-xl font-bold text-gray-900 mb-5">관련 글</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {relatedPosts.map((relatedPost) => (
-                <PostCard key={relatedPost.slug} post={relatedPost} />
-              ))}
-            </div>
-          </section>
-        )}
+        <RelatedPosts
+          currentSlug={slug}
+          currentCategory={frontmatter.category}
+          currentTags={frontmatter.tags ?? []}
+          allPosts={allPosts}
+        />
       </div>
     </>
   );
