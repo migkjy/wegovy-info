@@ -37,6 +37,12 @@ export default function Header() {
               보험정보
             </Link>
             <Link
+              href="/community"
+              className="px-3 py-1.5 text-sm text-gray-600 hover:text-teal-700 hover:bg-teal-50 rounded-md transition-colors"
+            >
+              경험 공유
+            </Link>
+            <Link
               href="/about"
               className="px-3 py-1.5 text-sm text-gray-600 hover:text-teal-700 hover:bg-teal-50 rounded-md transition-colors"
             >
@@ -100,6 +106,15 @@ export default function Header() {
                   onClick={() => setMenuOpen(false)}
                 >
                   보험정보
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/community"
+                  className="block px-3 py-2 text-sm text-gray-600 hover:text-teal-700 hover:bg-teal-50 rounded-md transition-colors"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  경험 공유
                 </Link>
               </li>
               <li>

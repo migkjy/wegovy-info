@@ -36,6 +36,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.8,
     },
+    {
+      url: `${SITE_URL}/community`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.7,
+    },
   ];
 
   const clinicDetailUrls: MetadataRoute.Sitemap = clinics.map((clinic) => ({

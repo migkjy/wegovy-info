@@ -66,3 +66,16 @@ export type Subscriber = typeof subscribers.$inferSelect;
 export type NewSubscriber = typeof subscribers.$inferInsert;
 export type SnsCuration = typeof snsCuration.$inferSelect;
 export type NewSnsCuration = typeof snsCuration.$inferInsert;
+
+export const communityPosts = sqliteTable('community_posts', {
+  id: text('id').primaryKey(),
+  nickname: text('nickname').notNull(),
+  drug: text('drug').notNull(),
+  content: text('content').notNull(),
+  week: integer('week'),
+  weightLoss: text('weight_loss'),
+  status: text('status').default('visible'),
+  createdAt: text('created_at').default(sql`(datetime('now'))`),
+})
+export type CommunityPost = typeof communityPosts.$inferSelect
+export type NewCommunityPost = typeof communityPosts.$inferInsert
