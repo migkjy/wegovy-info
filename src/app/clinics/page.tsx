@@ -2,6 +2,35 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { clinics, REGIONS, type Region } from '@/data/clinics'
 import { SITE_URL } from '@/lib/constants'
+import FaqSchema from '@/components/FaqSchema'
+
+const CLINIC_FAQ_ITEMS = [
+  {
+    question: '위고비 처방받으려면 어떤 병원에 가야 하나요?',
+    answer:
+      '위고비는 전문의약품으로 내과, 가정의학과, 내분비내과 등 처방 권한이 있는 의사가 있는 의원이나 병원에서 처방받을 수 있습니다. 비만클리닉 전문 의원을 포함하여 다양한 형태의 의료기관에서 처방이 가능하며, 처방 전 BMI 측정 및 혈액검사 등 기본 검진이 진행될 수 있습니다.',
+  },
+  {
+    question: '처방 비용은 얼마나 드나요?',
+    answer:
+      '비용은 병원과 처방 약물의 용량에 따라 크게 다릅니다. 위고비의 경우 약제비만 월 30만~60만 원 수준이 일반적이며, 초진 진찰료와 혈액검사 비용이 추가됩니다. 현재 비만 치료 목적의 GLP-1 비만치료제는 건강보험 급여 적용이 제한적입니다. 정확한 비용은 해당 의료기관에 직접 문의하시기 바랍니다.',
+  },
+  {
+    question: '비대면 처방도 가능한가요?',
+    answer:
+      '조건에 따라 비대면(온라인) 진료를 통한 처방이 가능한 경우가 있습니다. 일반적으로 기존에 동일 약물을 처방받은 이력이 있는 재진 환자의 경우 비대면 진료가 허용될 수 있습니다. 초진의 경우 신체 검진과 혈액검사가 필요하여 대면 진료가 권장됩니다. 허용 범위는 의료기관 정책 및 관련 법령에 따라 다를 수 있습니다.',
+  },
+  {
+    question: '처방 기준이 되는 BMI는 얼마인가요?',
+    answer:
+      '일반적으로 BMI 30 이상이거나, BMI 27 이상이면서 고혈압·제2형 당뇨병 등 비만 관련 동반 질환이 있는 경우 처방 대상이 될 수 있습니다. 그러나 최종 처방 여부는 환자의 전반적인 건강 상태, 동반 질환, 복용 중인 약물 등을 종합적으로 고려하여 담당 의사가 결정합니다.',
+  },
+  {
+    question: '이 페이지의 병원 정보는 얼마나 정확한가요?',
+    answer:
+      '이 페이지에 제공되는 병원 정보와 가격은 참고용으로만 제공됩니다. 실제 처방 가능 여부, 가격, 진료 시간 등은 변경될 수 있으며 병원마다 다릅니다. 방문 전 반드시 해당 의료기관에 직접 문의하여 확인하시기 바랍니다.',
+  },
+]
 
 export const metadata: Metadata = {
   title: '위고비 처방 병원 찾기 | GLP-1 비만치료제 처방 클리닉',
@@ -83,7 +112,9 @@ export default function ClinicsPage({
   )
 
   return (
-    <main className="max-w-5xl mx-auto px-4 py-8">
+    <>
+      <FaqSchema faqs={CLINIC_FAQ_ITEMS} />
+      <main className="max-w-5xl mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">위고비 처방 병원 찾기</h1>
         <p className="text-gray-600 text-sm">
@@ -163,6 +194,7 @@ export default function ClinicsPage({
           특정 병원을 추천하거나 의학적 조언을 제공하지 않습니다.
         </p>
       </div>
-    </main>
+      </main>
+    </>
   )
 }
