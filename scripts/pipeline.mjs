@@ -156,7 +156,10 @@ Rules: Objective tone only. No claims of safety/efficacy. No prescription advice
     timeout: 120000,
   })
 
-  return JSON.parse(raw.trim())
+  let cleaned = raw.trim()
+  // strip ```json or ``` wrapper that Claude CLI may add
+  cleaned = cleaned.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim()
+  return JSON.parse(cleaned)
 }
 
 // ── Write MDX file to content/posts/ ─────────────────────────────
