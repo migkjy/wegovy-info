@@ -3,6 +3,15 @@ import Link from 'next/link';
 import { DISCLAIMER, SITE_NAME, SITE_URL } from '@/lib/constants';
 import FaqSchema from '@/components/FaqSchema';
 
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: '홈', item: SITE_URL },
+    { '@type': 'ListItem', position: 2, name: '소개' },
+  ],
+};
+
 export const metadata: Metadata = {
   title: '소개',
   description: `${SITE_NAME}는 GLP-1 비만치료제(위고비, 삭센다, 마운자로)에 관한 객관적 정보를 제공하는 비영리 정보 사이트입니다.`,
@@ -48,6 +57,10 @@ const FAQ_ITEMS = [
 export default function AboutPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <FaqSchema faqs={FAQ_ITEMS} />
       <div className="max-w-3xl mx-auto px-4 py-10">
         {/* 브레드크럼 */}
