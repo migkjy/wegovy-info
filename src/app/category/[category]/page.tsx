@@ -21,17 +21,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const cat = CATEGORIES.find((c) => c.slug === category);
   if (!cat) return {};
 
+  const allPosts = getPostsByCategory(category);
   const url = `${SITE_URL}/category/${category}`;
 
   return {
-    title: `${cat.name} - 비만치료제 정보 | ${SITE_NAME}`,
-    description: cat.description,
+    title: `${cat.name} | GLP-1 비만치료제 정보`,
+    description: `${cat.description} - ${allPosts.length}개의 전문 포스트`,
     alternates: { canonical: url },
     openGraph: {
       type: 'website',
       url,
-      title: `${cat.name} 정보 | ${SITE_NAME}`,
-      description: cat.description,
+      title: `${cat.name} | GLP-1 비만치료제 정보`,
+      description: `${cat.description} - ${allPosts.length}개의 전문 포스트`,
       locale: 'ko_KR',
       siteName: SITE_NAME,
     },
@@ -58,8 +59,23 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: '홈', item: SITE_URL },
-      { '@type': 'ListItem', position: 2, name: cat.name },
+      { '@type': 'ListItem', position: 2, name: cat.name, item: `${SITE_URL}/category/${category}` },
     ],
+  };
+
+  const itemListJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `${cat.name} - GLP-1 비만치료제 정보`,
+    description: cat.description,
+    url: `${SITE_URL}/category/${category}`,
+    numberOfItems: allPosts.length,
+    itemListElement: allPosts.slice(0, 20).map((post, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      url: `${SITE_URL}/${post.slug}`,
+      name: post.frontmatter.title,
+    })),
   };
 
   return (
@@ -67,6 +83,10 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
       />
     <div className="max-w-5xl mx-auto px-4 py-10">
       {/* 브레드크럼 */}
@@ -76,10 +96,12 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
         <span className="text-gray-600">{cat.name}</span>
       </nav>
 
-      <header className="mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{cat.name}</h1>
-        <p className="text-gray-500">{cat.description}</p>
-      </header>
+      {/* 카테고리 설명 */}
+      <div className="mb-6 p-4 bg-teal-50 rounded-xl border border-teal-100">
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">{cat.name}</h1>
+        <p className="text-gray-600 text-sm">{cat.description}</p>
+        <p className="text-gray-400 text-xs mt-1">전체 {allPosts.length}개 포스트</p>
+      </div>
 
       <CategoryNav activeCategory={category} />
 
