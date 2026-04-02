@@ -2,7 +2,17 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { CATEGORIES, SITE_NAME } from '@/lib/constants';
+import { SITE_NAME } from '@/lib/constants';
+
+const NAV_LINKS = [
+  { href: '/wegovy', label: '위고비' },
+  { href: '/saxenda', label: '삭센다' },
+  { href: '/mounjaro', label: '마운자로' },
+  { href: '/category/comparison', label: '비교분석' },
+  { href: '/category/side-effects', label: '부작용' },
+  { href: '/category/price', label: '가격정보' },
+  { href: '/category/news', label: '뉴스' },
+];
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -15,13 +25,13 @@ export default function Header() {
             <span className="text-teal-600 font-bold text-xl">{SITE_NAME}</span>
           </Link>
           <nav className="hidden md:flex items-center gap-1">
-            {CATEGORIES.map((cat) => (
+            {NAV_LINKS.map((link) => (
               <Link
-                key={cat.slug}
-                href={`/category/${cat.slug}`}
+                key={link.href}
+                href={link.href}
                 className="px-3 py-1.5 text-sm text-gray-600 hover:text-teal-700 hover:bg-teal-50 rounded-md transition-colors"
               >
-                {cat.name}
+                {link.label}
               </Link>
             ))}
             <Link
@@ -79,14 +89,14 @@ export default function Header() {
         {menuOpen && (
           <nav className="md:hidden pb-4 border-t border-gray-100">
             <ul className="flex flex-col gap-1 pt-2">
-              {CATEGORIES.map((cat) => (
-                <li key={cat.slug}>
+              {NAV_LINKS.map((link) => (
+                <li key={link.href}>
                   <Link
-                    href={`/category/${cat.slug}`}
+                    href={link.href}
                     className="block px-3 py-2 text-sm text-gray-600 hover:text-teal-700 hover:bg-teal-50 rounded-md transition-colors"
                     onClick={() => setMenuOpen(false)}
                   >
-                    {cat.name}
+                    {link.label}
                   </Link>
                 </li>
               ))}
@@ -144,13 +154,13 @@ export default function Header() {
         {/* 모바일 카테고리 가로 스크롤 (메뉴 닫혔을 때만) */}
         {!menuOpen && (
           <div className="md:hidden flex gap-2 pb-3 overflow-x-auto scrollbar-hide">
-            {CATEGORIES.map((cat) => (
+            {NAV_LINKS.map((link) => (
               <Link
-                key={cat.slug}
-                href={`/category/${cat.slug}`}
+                key={link.href}
+                href={link.href}
                 className="whitespace-nowrap px-3 py-1 text-xs text-gray-600 bg-gray-100 hover:bg-teal-100 hover:text-teal-700 rounded-full transition-colors"
               >
-                {cat.name}
+                {link.label}
               </Link>
             ))}
           </div>
