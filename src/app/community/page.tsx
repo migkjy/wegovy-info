@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { analytics } from '@/lib/analytics'
 
 const TURNSTILE_SITE_KEY =
   process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '1x00000000000000000000AA'
@@ -128,6 +129,7 @@ export default function CommunityPage() {
       const data = await res.json()
       if (res.ok) {
         setSubmitSuccess(true)
+        analytics.communityPost(drug)
         setNickname('')
         setDrug('')
         setWeek('')

@@ -1,8 +1,13 @@
 'use client'
 
 import { useState } from 'react'
+import { analytics } from '@/lib/analytics'
 
-export default function NewsletterSignup() {
+interface NewsletterSignupProps {
+  source?: string
+}
+
+export default function NewsletterSignup({ source = 'general' }: NewsletterSignupProps) {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
@@ -30,6 +35,7 @@ export default function NewsletterSignup() {
         setStatus('success')
         setMessage(data.message ?? '뉴스레터 구독이 완료되었습니다!')
         setEmail('')
+        analytics.newsletterSignup(source)
       }
     } catch {
       setStatus('error')

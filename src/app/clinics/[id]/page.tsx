@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { clinics } from '@/data/clinics'
 import { SITE_URL } from '@/lib/constants'
+import ClinicViewTracker from '@/components/ClinicViewTracker'
 
 interface Props {
   params: { id: string }
@@ -58,6 +59,7 @@ export default function ClinicDetailPage({ params }: Props) {
 
   return (
     <>
+      <ClinicViewTracker clinicId={clinic.id} region={clinic.region} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
