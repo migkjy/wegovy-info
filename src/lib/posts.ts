@@ -113,3 +113,22 @@ export function getAllPostSlugs(): string[] {
     .filter((f) => f.endsWith('.mdx') || f.endsWith('.md'))
     .map((f) => f.replace(/\.(mdx|md)$/, ''));
 }
+
+export function getRecentPostsByCategory(category: string, limit: number = 3): PostMeta[] {
+  return getAllPosts()
+    .filter((p) => p.frontmatter.category === category)
+    .slice(0, limit);
+}
+
+export function getTopTags(limit: number = 20): { tag: string; count: number }[] {
+  const tagCounts: Record<string, number> = {};
+  getAllPosts().forEach((post) => {
+    post.frontmatter.tags?.forEach((tag) => {
+      tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+    });
+  });
+  return Object.entries(tagCounts)
+    .map(([tag, count]) => ({ tag, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, limit);
+}
