@@ -8,7 +8,11 @@ interface TocItem {
   level: number;
 }
 
-export default function TableOfContents() {
+interface TableOfContentsProps {
+  variant?: 'mobile' | 'desktop';
+}
+
+export default function TableOfContents({ variant }: TableOfContentsProps) {
   const [headings, setHeadings] = useState<TocItem[]>([]);
   const [activeId, setActiveId] = useState<string>('');
   const [isOpen, setIsOpen] = useState(false);
@@ -73,10 +77,13 @@ export default function TableOfContents() {
 
   if (headings.length === 0) return null;
 
+  const showMobile = variant !== 'desktop';
+  const showDesktop = variant !== 'mobile';
+
   return (
     <>
       {/* Mobile: collapsible */}
-      <div className="lg:hidden mb-6">
+      {showMobile && <div className="lg:hidden mb-6">
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="flex items-center gap-2 w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
@@ -117,10 +124,10 @@ export default function TableOfContents() {
             </ul>
           </nav>
         )}
-      </div>
+      </div>}
 
       {/* Desktop: sticky sidebar */}
-      <aside className="hidden lg:block">
+      {showDesktop && <aside className="hidden lg:block">
         <div className="sticky top-24">
           <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">목차</h4>
           <nav>
@@ -144,7 +151,7 @@ export default function TableOfContents() {
             </ul>
           </nav>
         </div>
-      </aside>
+      </aside>}
     </>
   );
 }

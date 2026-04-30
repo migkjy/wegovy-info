@@ -153,7 +153,7 @@ export default async function PostPage({ params }: PageProps) {
         </header>
 
         {/* 모바일 TOC */}
-        <TableOfContents />
+        <TableOfContents variant="mobile" />
 
         {/* 본문 + 데스크탑 TOC 사이드바 */}
         <div className="lg:grid lg:grid-cols-[1fr_200px] lg:gap-8">
@@ -187,7 +187,7 @@ export default async function PostPage({ params }: PageProps) {
           </div>
 
           {/* 데스크탑 TOC 사이드바 */}
-          <TableOfContents />
+          <TableOfContents variant="desktop" />
         </div>
 
         {/* 소셜 공유 */}
