@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, real } from 'drizzle-orm/sqlite-core';
 import { sql } from 'drizzle-orm';
 
 export const posts = sqliteTable('posts', {
@@ -37,8 +37,56 @@ export const clinics = sqliteTable('clinics', {
   wegovyPrice: integer('wegovy_price'),
   saxendaPrice: integer('saxenda_price'),
   mounjaroPrice: integer('mounjaro_price'),
+  features: text('features'),
   website: text('website'),
+  latitude: real('latitude'),
+  longitude: real('longitude'),
+  operatingHours: text('operating_hours'),
+  naverPlaceId: text('naver_place_id'),
+  googlePlaceId: text('google_place_id'),
+  naverRating: real('naver_rating'),
+  googleRating: real('google_rating'),
+  reviewCount: integer('review_count').default(0),
+  isVerified: integer('is_verified', { mode: 'boolean' }).default(false),
+  dataSource: text('data_source').default('manual'),
+  glp1Drugs: text('glp1_drugs'),
+  hasOnlineConsultation: integer('has_online_consultation', { mode: 'boolean' }).default(false),
   updatedAt: text('updated_at').default(sql`(datetime('now'))`),
+});
+
+export const news = sqliteTable('news', {
+  id: text('id').primaryKey(),
+  title: text('title').notNull(),
+  url: text('url').notNull().unique(),
+  source: text('source').notNull(),
+  category: text('category'),
+  drugTags: text('drug_tags'),
+  publishedAt: text('published_at').notNull(),
+  summary: text('summary'),
+  isFeatured: integer('is_featured', { mode: 'boolean' }).default(false),
+  createdAt: text('created_at').default(sql`(datetime('now'))`),
+});
+
+export const priceSubmissions = sqliteTable('price_submissions', {
+  id: text('id').primaryKey(),
+  clinicId: text('clinic_id').notNull(),
+  drug: text('drug').notNull(),
+  price: integer('price').notNull(),
+  dosage: text('dosage'),
+  submittedBy: text('submitted_by'),
+  isApproved: integer('is_approved', { mode: 'boolean' }).default(false),
+  approvedAt: text('approved_at'),
+  createdAt: text('created_at').default(sql`(datetime('now'))`),
+});
+
+export const dataCollectionLogs = sqliteTable('data_collection_logs', {
+  id: text('id').primaryKey(),
+  source: text('source').notNull(),
+  recordsCollected: integer('records_collected'),
+  recordsInserted: integer('records_inserted'),
+  recordsUpdated: integer('records_updated'),
+  errors: text('errors'),
+  runAt: text('run_at').default(sql`(datetime('now'))`),
 });
 
 export const subscribers = sqliteTable('subscribers', {
@@ -50,22 +98,12 @@ export const subscribers = sqliteTable('subscribers', {
 export const snsCuration = sqliteTable('sns_curation', {
   id: text('id').primaryKey(),
   sourceUrl: text('source_url').notNull().unique(),
-  sourcePlatform: text('source_platform').default('blog'), // blog | youtube | instagram
+  sourcePlatform: text('source_platform').default('blog'),
   originalTitle: text('original_title'),
-  claudeSummary: text('claude_summary'), // Claude's brief summary (not full content)
-  status: text('status').default('pending'), // pending | approved | rejected
+  claudeSummary: text('claude_summary'),
+  status: text('status').default('pending'),
   createdAt: text('created_at').default(sql`(datetime('now'))`),
 });
-
-export type Post = typeof posts.$inferSelect;
-export type NewPost = typeof posts.$inferInsert;
-export type PipelineItem = typeof pipelineQueue.$inferSelect;
-export type NewPipelineItem = typeof pipelineQueue.$inferInsert;
-export type Clinic = typeof clinics.$inferSelect;
-export type Subscriber = typeof subscribers.$inferSelect;
-export type NewSubscriber = typeof subscribers.$inferInsert;
-export type SnsCuration = typeof snsCuration.$inferSelect;
-export type NewSnsCuration = typeof snsCuration.$inferInsert;
 
 export const communityPosts = sqliteTable('community_posts', {
   id: text('id').primaryKey(),
@@ -77,6 +115,23 @@ export const communityPosts = sqliteTable('community_posts', {
   ipHash: text('ip_hash'),
   status: text('status').default('visible'),
   createdAt: text('created_at').default(sql`(datetime('now'))`),
-})
-export type CommunityPost = typeof communityPosts.$inferSelect
-export type NewCommunityPost = typeof communityPosts.$inferInsert
+});
+
+export type Post = typeof posts.$inferSelect;
+export type NewPost = typeof posts.$inferInsert;
+export type PipelineItem = typeof pipelineQueue.$inferSelect;
+export type NewPipelineItem = typeof pipelineQueue.$inferInsert;
+export type Clinic = typeof clinics.$inferSelect;
+export type NewClinic = typeof clinics.$inferInsert;
+export type NewsItem = typeof news.$inferSelect;
+export type NewNewsItem = typeof news.$inferInsert;
+export type PriceSubmission = typeof priceSubmissions.$inferSelect;
+export type NewPriceSubmission = typeof priceSubmissions.$inferInsert;
+export type DataCollectionLog = typeof dataCollectionLogs.$inferSelect;
+export type NewDataCollectionLog = typeof dataCollectionLogs.$inferInsert;
+export type Subscriber = typeof subscribers.$inferSelect;
+export type NewSubscriber = typeof subscribers.$inferInsert;
+export type SnsCuration = typeof snsCuration.$inferSelect;
+export type NewSnsCuration = typeof snsCuration.$inferInsert;
+export type CommunityPost = typeof communityPosts.$inferSelect;
+export type NewCommunityPost = typeof communityPosts.$inferInsert;

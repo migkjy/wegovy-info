@@ -11,7 +11,11 @@
     "test:watch": "vitest",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "collect": "node scripts/collect/index.mjs",
+    "collect:rss": "node scripts/collect/rss-feeds.mjs",
+    "collect:naver": "node scripts/collect/naver-news.mjs",
+    "collect:hira": "node scripts/collect/hira-clinics.mjs"
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.19",
@@ -24,20 +28,21 @@
     "remark-gfm": "^4.0.0"
   },
   "devDependencies": {
+    "@libsql/client": "^0.17.3",
+    "@playwright/test": "^1.42.0",
     "@tailwindcss/postcss": "^4",
-    "drizzle-kit": "^0.30.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^5.1.4",
+    "drizzle-kit": "^0.30.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "jsdom": "^28.1.0",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "vitest": "^4.0.18",
-    "@playwright/test": "^1.42.0"
+    "vitest": "^4.0.18"
   }
 }
