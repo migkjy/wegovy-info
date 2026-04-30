@@ -17,7 +17,7 @@ GLP-1 비만치료제(위고비/삭센다/마운자로) 정보 콘텐츠 플랫�
 - Next.js 16 (App Router), TypeScript, Tailwind CSS v4
 - gray-matter + next-mdx-remote (MDX 블로그)
 - @tailwindcss/typography (prose 스타일)
-- 배포: Vercel (Git push 연동, CEO 승인 후 설정)
+- 배포: NUC 로컬 (cloudflared 터널 → wegovy.newbizsoft.com)
 
 ## 빌드 명령
 ```bash
@@ -84,8 +84,8 @@ NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX  (선택)
 ```
 
 ## 도메인
-- 미정 — 환경변수 NEXT_PUBLIC_SITE_URL로 처리
-- Vercel 프로젝트 설정은 CEO 승인 후 진행
+- 운영: https://wegovy.newbizsoft.com (cloudflared 터널)
+- 향후: wegovy-info.com (CEO 결정 시 전환)
 
 ## GitHub Repo
 - https://github.com/migkjy/wegovy-info (생성 후 업데이트)
