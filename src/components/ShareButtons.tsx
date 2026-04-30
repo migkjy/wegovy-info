@@ -43,7 +43,8 @@ export default function ShareButtons({ title, description, url }: ShareButtonsPr
         window.Kakao.init(kakaoAppKey);
       }
       if (window.Kakao?.isInitialized()) {
-        setKakaoReady(true);
+        const rafId = requestAnimationFrame(() => setKakaoReady(true));
+        return () => cancelAnimationFrame(rafId);
       }
       return;
     }

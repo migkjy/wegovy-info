@@ -14,28 +14,32 @@ export default function TableOfContents() {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    const article = document.querySelector('article');
-    if (!article) return;
+    const rafId = requestAnimationFrame(() => {
+      const article = document.querySelector('article');
+      if (!article) return;
 
-    const elements = article.querySelectorAll('h2, h3');
-    const items: TocItem[] = [];
+      const elements = article.querySelectorAll('h2, h3');
+      const items: TocItem[] = [];
 
-    elements.forEach((el) => {
-      if (!el.id) {
-        el.id = el.textContent
-          ?.trim()
-          .toLowerCase()
-          .replace(/\s+/g, '-')
-          .replace(/[^\w가-힣-]/g, '') || '';
-      }
-      items.push({
-        id: el.id,
-        text: el.textContent || '',
-        level: el.tagName === 'H2' ? 2 : 3,
+      elements.forEach((el) => {
+        if (!el.id) {
+          el.id = el.textContent
+            ?.trim()
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/[^\w가-힣-]/g, '') || '';
+        }
+        items.push({
+          id: el.id,
+          text: el.textContent || '',
+          level: el.tagName === 'H2' ? 2 : 3,
+        });
       });
+
+      setHeadings(items);
     });
 
-    setHeadings(items);
+    return () => cancelAnimationFrame(rafId);
   }, []);
 
   useEffect(() => {

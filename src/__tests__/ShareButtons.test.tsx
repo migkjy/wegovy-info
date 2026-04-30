@@ -111,6 +111,8 @@ describe('ShareButtons', () => {
       render(<ShareButtons {...DEFAULT_PROPS} />)
     })
 
-    expect(screen.getByRole('button', { name: /카카오톡/i })).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /카카오톡/i })).toBeInTheDocument()
+    })
   })
 })
