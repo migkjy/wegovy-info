@@ -13,6 +13,8 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "collect": "node scripts/collect/index.mjs",
+    "collect:clinics": "node scripts/collect/hira-clinics.mjs",
+    "collect:news": "node scripts/collect/index.mjs --rss --naver",
     "collect:rss": "node scripts/collect/rss-feeds.mjs",
     "collect:naver": "node scripts/collect/naver-news.mjs",
     "collect:hira": "node scripts/collect/hira-clinics.mjs"
