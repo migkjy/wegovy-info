@@ -17,7 +17,8 @@
     "collect:news": "node scripts/collect/index.mjs --rss --naver",
     "collect:rss": "node scripts/collect/rss-feeds.mjs",
     "collect:naver": "node scripts/collect/naver-news.mjs",
-    "collect:hira": "node scripts/collect/hira-clinics.mjs"
+    "collect:hira": "node scripts/collect/hira-clinics.mjs",
+    "collect:geocode": "node scripts/collect/geocode-clinics.mjs"
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.19",
