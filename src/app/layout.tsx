@@ -1,9 +1,21 @@
 import type { Metadata } from 'next';
+import localFont from 'next/font/local';
 import Script from 'next/script';
 import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { SITE_NAME, SITE_DESCRIPTION, SITE_URL } from '@/lib/constants';
+
+const pretendard = localFont({
+  src: [
+    { path: '../../public/fonts/Pretendard-Regular.woff2', weight: '400', style: 'normal' },
+    { path: '../../public/fonts/Pretendard-Medium.woff2', weight: '500', style: 'normal' },
+    { path: '../../public/fonts/Pretendard-SemiBold.woff2', weight: '600', style: 'normal' },
+    { path: '../../public/fonts/Pretendard-Bold.woff2', weight: '700', style: 'normal' },
+  ],
+  display: 'swap',
+  variable: '--font-pretendard',
+});
 
 export const metadata: Metadata = {
   title: {
@@ -79,11 +91,6 @@ export default function RootLayout({
           <meta name="google-site-verification" content={GOOGLE_SITE_VERIFICATION} />
         )}
         <link rel="alternate" type="application/rss+xml" title={SITE_NAME} href={`${SITE_URL}/feed.xml`} />
-        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
-        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
@@ -93,7 +100,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
       </head>
-      <body className="antialiased bg-gray-50 min-h-screen" style={{ fontFamily: 'Pretendard, sans-serif' }}>
+      <body className={`${pretendard.variable} antialiased bg-gray-50 min-h-screen`}>
         {isProduction && GA_ID && (
           <>
             <Script
