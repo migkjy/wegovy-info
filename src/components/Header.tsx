@@ -11,7 +11,7 @@ const NAV_LINKS = [
   { href: '/category/comparison', label: '비교분석' },
   { href: '/category/side-effects', label: '부작용' },
   { href: '/category/price', label: '가격정보' },
-  { href: '/category/news', label: '뉴스' },
+  { href: '/news', label: '뉴스' },
 ];
 
 export default function Header() {

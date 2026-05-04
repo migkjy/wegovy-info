@@ -1,5 +1,6 @@
 import { getAllPosts } from '@/lib/posts';
 import { CATEGORIES, SITE_NAME, POSTS_PER_PAGE } from '@/lib/constants';
+import { getLatestNews } from '@/lib/db/queries';
 import PostCard from '@/components/PostCard';
 import FeaturedPost from '@/components/FeaturedPost';
 import CategoryNav from '@/components/CategoryNav';
@@ -13,11 +14,25 @@ interface PageProps {
   searchParams: Promise<{ page?: string }>;
 }
 
+function formatNewsDate(dateStr: string) {
+  try {
+    return new Date(dateStr).toLocaleDateString('ko-KR', {
+      month: 'long',
+      day: 'numeric',
+    });
+  } catch {
+    return dateStr;
+  }
+}
+
 export default async function HomePage({ searchParams }: PageProps) {
   const { page: pageParam } = await searchParams;
   const currentPage = Math.max(1, parseInt(pageParam ?? '1', 10) || 1);
 
-  const allPosts = getAllPosts();
+  const [allPosts, latestNews] = await Promise.all([
+    Promise.resolve(getAllPosts()),
+    getLatestNews(3),
+  ]);
   const featuredPost = allPosts[0];
   const remainingPosts = allPosts.slice(1);
 
@@ -66,6 +81,80 @@ export default async function HomePage({ searchParams }: PageProps) {
 
       {/* Popular Tags */}
       {currentPage === 1 && <PopularTags />}
+
+      {/* Latest News from DB */}
+      {currentPage === 1 && latestNews.length > 0 && (
+        <section className="mb-10">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-gray-900">최신 뉴스</h2>
+            <Link
+              href="/news"
+              className="text-sm text-teal-600 hover:text-teal-800 transition-colors"
+            >
+              전체보기 →
+            </Link>
+          </div>
+          <div className="grid gap-3">
+            {latestNews.map((news) => (
+              <Link
+                key={news.id}
+                href={`/news/${news.id}`}
+                className="flex items-start gap-4 bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md hover:border-teal-300 transition-all"
+              >
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-gray-900 text-sm leading-snug mb-1 line-clamp-2">
+                    {news.title}
+                  </h3>
+                  {news.summary && (
+                    <p className="text-xs text-gray-500 line-clamp-1">{news.summary}</p>
+                  )}
+                </div>
+                <div className="shrink-0 text-xs text-gray-400 whitespace-nowrap">
+                  <span>{news.source}</span>
+                  <span className="mx-1">·</span>
+                  <span>{formatNewsDate(news.publishedAt)}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Clinic Shortcut */}
+      {currentPage === 1 && (
+        <section className="mb-10">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-gray-900">병원 찾기</h2>
+            <Link
+              href="/clinics"
+              className="text-sm text-teal-600 hover:text-teal-800 transition-colors"
+            >
+              전체보기 →
+            </Link>
+          </div>
+          <Link
+            href="/clinics"
+            className="block bg-gradient-to-r from-teal-50 to-blue-50 border border-teal-200 rounded-xl p-6 hover:shadow-md transition-all"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center shrink-0">
+                <svg className="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-1">
+                  GLP-1 비만치료제 처방 병원 찾기
+                </h3>
+                <p className="text-sm text-gray-600">
+                  지역별 위고비·삭센다·마운자로 처방 병원과 참고 가격을 확인하세요
+                </p>
+              </div>
+            </div>
+          </Link>
+        </section>
+      )}
 
       {/* Latest Posts */}
       <section>

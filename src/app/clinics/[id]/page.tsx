@@ -1,20 +1,80 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { clinics } from '@/data/clinics'
+import { clinics as staticClinics } from '@/data/clinics'
+import { getClinicById, type ClinicRow } from '@/lib/db/queries'
 import { SITE_URL } from '@/lib/constants'
 import ClinicViewTracker from '@/components/ClinicViewTracker'
 
 interface Props {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
-export function generateStaticParams() {
-  return clinics.map((clinic) => ({ id: clinic.id }))
+interface NormalizedClinic {
+  id: string
+  name: string
+  region: string
+  address: string
+  phone: string
+  wegovyPrice?: number | null
+  saxendaPrice?: number | null
+  mounjaroPrice?: number | null
+  features: string[]
+  website?: string | null
+  operatingHours?: string | null
+  latitude?: number | null
+  longitude?: number | null
 }
 
-export function generateMetadata({ params }: Props): Metadata {
-  const clinic = clinics.find((c) => c.id === params.id)
+function normalizeDbClinic(c: ClinicRow): NormalizedClinic {
+  let features: string[] = []
+  if (c.features) {
+    try { features = JSON.parse(c.features) } catch { features = [] }
+  }
+  if (c.hasOnlineConsultation) features.push('비대면 상담')
+  return {
+    id: c.id,
+    name: c.name,
+    region: c.region,
+    address: c.address ?? '',
+    phone: c.phone ?? '',
+    wegovyPrice: c.wegovyPrice,
+    saxendaPrice: c.saxendaPrice,
+    mounjaroPrice: c.mounjaroPrice,
+    features,
+    website: c.website,
+    operatingHours: c.operatingHours,
+    latitude: c.latitude,
+    longitude: c.longitude,
+  }
+}
+
+async function findClinic(id: string): Promise<NormalizedClinic | null> {
+  const dbClinic = await getClinicById(id)
+  if (dbClinic) return normalizeDbClinic(dbClinic)
+
+  const staticClinic = staticClinics.find((c) => c.id === id)
+  if (staticClinic) {
+    return {
+      id: staticClinic.id,
+      name: staticClinic.name,
+      region: staticClinic.region,
+      address: staticClinic.address,
+      phone: staticClinic.phone,
+      wegovyPrice: staticClinic.wegovyPrice,
+      saxendaPrice: staticClinic.saxendaPrice,
+      mounjaroPrice: staticClinic.mounjaroPrice,
+      features: staticClinic.features,
+      website: staticClinic.website,
+    }
+  }
+
+  return null
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params
+  const clinic = await findClinic(id)
   if (!clinic) return {}
   return {
     title: `${clinic.name} | 위고비 처방 병원`,
@@ -23,13 +83,14 @@ export function generateMetadata({ params }: Props): Metadata {
   }
 }
 
-function formatPrice(price?: number) {
+function formatPrice(price?: number | null) {
   if (price == null) return null
   return `${price.toLocaleString('ko-KR')}원/월`
 }
 
-export default function ClinicDetailPage({ params }: Props) {
-  const clinic = clinics.find((c) => c.id === params.id)
+export default async function ClinicDetailPage({ params }: Props) {
+  const { id } = await params
+  const clinic = await findClinic(id)
   if (!clinic) notFound()
 
   const jsonLd = {
@@ -43,6 +104,15 @@ export default function ClinicDetailPage({ params }: Props) {
     telephone: clinic.phone,
     description: `GLP-1 비만치료제(위고비, 삭센다, 마운자로) 처방 병원 - ${clinic.region}`,
     url: clinic.website ?? `${SITE_URL}/clinics/${clinic.id}`,
+    ...(clinic.latitude && clinic.longitude
+      ? {
+          geo: {
+            '@type': 'GeoCoordinates',
+            latitude: clinic.latitude,
+            longitude: clinic.longitude,
+          },
+        }
+      : {}),
   }
 
   const prices = [
@@ -82,7 +152,6 @@ export default function ClinicDetailPage({ params }: Props) {
           </div>
 
           <div className="p-6 space-y-6">
-            {/* 기본 정보 */}
             <section>
               <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
                 기본 정보
@@ -92,17 +161,19 @@ export default function ClinicDetailPage({ params }: Props) {
                   <dt className="text-sm text-gray-500 w-16 shrink-0">주소</dt>
                   <dd className="text-sm text-gray-800">{clinic.address}</dd>
                 </div>
-                <div className="flex gap-3">
-                  <dt className="text-sm text-gray-500 w-16 shrink-0">전화</dt>
-                  <dd className="text-sm text-gray-800">
-                    <a
-                      href={`tel:${clinic.phone.replace(/-/g, '')}`}
-                      className="text-teal-700 hover:underline"
-                    >
-                      {clinic.phone}
-                    </a>
-                  </dd>
-                </div>
+                {clinic.phone && (
+                  <div className="flex gap-3">
+                    <dt className="text-sm text-gray-500 w-16 shrink-0">전화</dt>
+                    <dd className="text-sm text-gray-800">
+                      <a
+                        href={`tel:${clinic.phone.replace(/-/g, '')}`}
+                        className="text-teal-700 hover:underline"
+                      >
+                        {clinic.phone}
+                      </a>
+                    </dd>
+                  </div>
+                )}
                 {clinic.website && (
                   <div className="flex gap-3">
                     <dt className="text-sm text-gray-500 w-16 shrink-0">웹사이트</dt>
@@ -118,10 +189,15 @@ export default function ClinicDetailPage({ params }: Props) {
                     </dd>
                   </div>
                 )}
+                {clinic.operatingHours && (
+                  <div className="flex gap-3">
+                    <dt className="text-sm text-gray-500 w-16 shrink-0">진료시간</dt>
+                    <dd className="text-sm text-gray-800">{clinic.operatingHours}</dd>
+                  </div>
+                )}
               </dl>
             </section>
 
-            {/* 가격 정보 */}
             {prices.length > 0 && (
               <section>
                 <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
@@ -144,7 +220,6 @@ export default function ClinicDetailPage({ params }: Props) {
               </section>
             )}
 
-            {/* 특징 */}
             {clinic.features.length > 0 && (
               <section>
                 <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
@@ -165,7 +240,6 @@ export default function ClinicDetailPage({ params }: Props) {
           </div>
         </div>
 
-        {/* 면책조항 */}
         <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-500">
           <p className="mb-1 font-semibold text-gray-600">면책조항</p>
           <p>
