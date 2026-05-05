@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import remarkGfm from 'remark-gfm';
-import { getAllPosts, getAllPostSlugs, getPostBySlug, getReadingTime } from '@/lib/posts';
+import { getAllPosts, getAllPostSlugs, getPostBySlug, getReadingTime, type FaqItem } from '@/lib/posts';
 import RelatedPosts from '@/components/RelatedPosts';
 import PostCTA from '@/components/PostCTA';
 import ShareButtons from '@/components/ShareButtons';
@@ -135,11 +135,12 @@ export default async function PostPage({ params }: PageProps) {
     },
   };
 
-  const faqPageJsonLd = frontmatter.faqs && frontmatter.faqs.length > 0
+  const faqs = (frontmatter as { faqs?: FaqItem[] }).faqs;
+  const faqPageJsonLd = faqs && faqs.length > 0
     ? {
         '@context': 'https://schema.org',
         '@type': 'FAQPage',
-        mainEntity: frontmatter.faqs.map((faq) => ({
+        mainEntity: faqs.map((faq) => ({
           '@type': 'Question',
           name: faq.q,
           acceptedAnswer: { '@type': 'Answer', text: faq.a },
