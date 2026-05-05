@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getNewsById } from '@/lib/db/queries'
-import { SITE_URL } from '@/lib/constants'
+import { SITE_URL, SITE_NAME } from '@/lib/constants'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -12,10 +12,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
   const news = await getNewsById(id)
   if (!news) return {}
+  const title = `${news.title} | GLP-1 뉴스`
+  const description = news.summary ?? `${news.title} — ${news.source}`
+  const url = `${SITE_URL}/news/${id}`
   return {
-    title: `${news.title} | GLP-1 뉴스`,
-    description: news.summary ?? `${news.title} — ${news.source}`,
-    alternates: { canonical: `${SITE_URL}/news/${id}` },
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: SITE_NAME,
+      type: 'article',
+      locale: 'ko_KR',
+      publishedTime: news.publishedAt,
+    },
+    twitter: {
+      card: 'summary',
+      title,
+      description,
+    },
   }
 }
 
@@ -51,12 +68,22 @@ export default async function NewsDetailPage({ params }: Props) {
     '@type': 'NewsArticle',
     headline: news.title,
     datePublished: news.publishedAt,
+    dateModified: news.publishedAt,
     publisher: {
+      '@type': 'Organization',
+      name: news.source,
+    },
+    author: {
       '@type': 'Organization',
       name: news.source,
     },
     description: news.summary ?? news.title,
     url: news.url,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${SITE_URL}/news/${id}`,
+    },
+    inLanguage: 'ko-KR',
   }
 
   return (

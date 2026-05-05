@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { clinics as staticClinics } from '@/data/clinics'
 import { getClinicById, type ClinicRow } from '@/lib/db/queries'
-import { SITE_URL } from '@/lib/constants'
+import { SITE_URL, SITE_NAME } from '@/lib/constants'
 import ClinicViewTracker from '@/components/ClinicViewTracker'
 
 interface Props {
@@ -76,10 +76,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
   const clinic = await findClinic(id)
   if (!clinic) return {}
+  const title = `${clinic.name} | 위고비 처방 병원`
+  const description = `${clinic.region} ${clinic.name} — GLP-1 비만치료제(위고비, 삭센다, 마운자로) 처방 병원 정보 및 참고 가격`
+  const url = `${SITE_URL}/clinics/${clinic.id}`
   return {
-    title: `${clinic.name} | 위고비 처방 병원`,
-    description: `${clinic.region} ${clinic.name} — GLP-1 비만치료제(위고비, 삭센다, 마운자로) 처방 병원 정보 및 참고 가격`,
-    alternates: { canonical: `${SITE_URL}/clinics/${clinic.id}` },
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: SITE_NAME,
+      type: 'website',
+      locale: 'ko_KR',
+    },
+    twitter: {
+      card: 'summary',
+      title,
+      description,
+    },
   }
 }
 
@@ -100,10 +116,18 @@ export default async function ClinicDetailPage({ params }: Props) {
     address: {
       '@type': 'PostalAddress',
       streetAddress: clinic.address,
+      addressRegion: clinic.region,
+      addressCountry: 'KR',
     },
     telephone: clinic.phone,
     description: `GLP-1 비만치료제(위고비, 삭센다, 마운자로) 처방 병원 - ${clinic.region}`,
     url: clinic.website ?? `${SITE_URL}/clinics/${clinic.id}`,
+    medicalSpecialty: 'Endocrine',
+    availableService: {
+      '@type': 'MedicalTherapy',
+      name: 'GLP-1 비만치료제 처방',
+      description: '위고비, 삭센다, 마운자로 등 GLP-1 계열 비만치료제 처방 및 관리',
+    },
     ...(clinic.latitude && clinic.longitude
       ? {
           geo: {

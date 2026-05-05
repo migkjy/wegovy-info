@@ -4,6 +4,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import remarkGfm from 'remark-gfm';
 import { getAllPosts, getAllPostSlugs, getPostBySlug, getReadingTime } from '@/lib/posts';
 import RelatedPosts from '@/components/RelatedPosts';
+import PostCTA from '@/components/PostCTA';
 import ShareButtons from '@/components/ShareButtons';
 import TableOfContents from '@/components/TableOfContents';
 import { CATEGORIES, DISCLAIMER, SITE_NAME, SITE_URL } from '@/lib/constants';
@@ -74,26 +75,77 @@ export default async function PostPage({ params }: PageProps) {
     ],
   };
 
-  const blogPostingJsonLd = {
+  const articleJsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
+    '@type': 'Article',
     headline: frontmatter.title,
     description: frontmatter.description,
     datePublished: frontmatter.date,
     dateModified: frontmatter.date,
     author: {
-      '@type': 'Person',
-      name: frontmatter.author,
+      '@type': 'Organization',
+      name: SITE_NAME,
+      url: SITE_URL,
     },
     publisher: {
       '@type': 'Organization',
       name: SITE_NAME,
       url: SITE_URL,
     },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${SITE_URL}/${slug}`,
+    },
     url: `${SITE_URL}/${slug}`,
     ...(frontmatter.image ? { image: frontmatter.image } : {}),
     inLanguage: 'ko-KR',
+    wordCount: content.replace(/\s/g, '').length,
   };
+
+  const medicalWebPageJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'MedicalWebPage',
+    name: frontmatter.title,
+    description: frontmatter.description,
+    url: `${SITE_URL}/${slug}`,
+    lastReviewed: frontmatter.date,
+    datePublished: frontmatter.date,
+    dateModified: frontmatter.date,
+    inLanguage: 'ko-KR',
+    about: {
+      '@type': 'MedicalCondition',
+      name: '비만',
+      associatedAnatomy: {
+        '@type': 'AnatomicalStructure',
+        name: '소화기계',
+      },
+    },
+    specialty: {
+      '@type': 'MedicalSpecialty',
+      name: '비만의학',
+    },
+    audience: {
+      '@type': 'MedicalAudience',
+      audienceType: '환자',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: SITE_NAME,
+      url: SITE_URL,
+    },
+  };
+
+  const faqPageJsonLd = frontmatter.faqs && frontmatter.faqs.length > 0
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: frontmatter.faqs.map((faq) => ({
+          '@type': 'Question',
+          name: faq.q,
+          acceptedAnswer: { '@type': 'Answer', text: faq.a },
+        })),
+      }
+    : null;
 
   return (
     <>
@@ -103,8 +155,18 @@ export default async function PostPage({ params }: PageProps) {
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogPostingJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(medicalWebPageJsonLd) }}
+      />
+      {faqPageJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqPageJsonLd) }}
+        />
+      )}
       <div className="max-w-5xl mx-auto px-4 py-10">
         {/* 브레드크럼 */}
         <nav className="flex items-center gap-2 text-sm text-gray-400 mb-6">
@@ -196,6 +258,9 @@ export default async function PostPage({ params }: PageProps) {
           description={frontmatter.description}
           url={`${SITE_URL}/${slug}`}
         />
+
+        {/* CTA — 병원 찾기 / 뉴스 */}
+        <PostCTA />
 
         {/* 관련 글 */}
         <RelatedPosts
